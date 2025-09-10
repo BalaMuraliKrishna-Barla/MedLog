@@ -10,7 +10,8 @@ const { protect } = require('../middleware/authMiddleware');
 
 router.use(protect);
 
-router.route('/').get(getVitals).post(addVital);
+router.route("/:userId").get(getVitals);
+router.route("/").post(addVital);
 router.route('/:id').put(updateVital).delete(deleteVital);
 
 module.exports = router;

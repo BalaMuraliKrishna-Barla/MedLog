@@ -1,14 +1,36 @@
 const Allergy = require('../models/allergyModel');
 
-// @desc    Get all allergies for a user
-// @route   GET /api/allergies
+// @desc    Get all allergies for a user (either self or shared)
+// @route   GET /api/allergies/:userId
 // @access  Private
 const getAllergies = async (req, res) => {
     try {
-        const allergies = await Allergy.find({ user: req.user.id }).sort({ createdAt: -1 });
+        const targetUserId = req.params.userId;
+        const requesterId = req.user.id;
+
+        // Check if the requester is asking for their own records
+        if (targetUserId === requesterId) {
+            const allergies = await Allergy.find({ user: targetUserId }).sort({ createdAt: -1 });
+            return res.status(200).json(allergies);
+        }
+
+        // If not, check if there is an active access grant
+        const grant = await AccessGrant.findOne({
+            owner: targetUserId,
+            grantee: requesterId,
+            status: 'active',
+        });
+
+        if (!grant) {
+            res.status(403); // Use 403 Forbidden for valid user but no permission
+            throw new Error('You do not have permission to access these records.');
+        }
+
+        // If grant exists and is active, fetch the records
+        const allergies = await Allergy.find({ user: targetUserId }).sort({ createdAt: -1 });
         res.status(200).json(allergies);
     } catch (error) {
-        res.status(500).json({ message: 'Server Error' });
+        res.status(res.statusCode || 500).json({ message: error.message });
     }
 };
 

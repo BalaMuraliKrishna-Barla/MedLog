@@ -1,14 +1,34 @@
 const Medication = require('../models/medicationModel');
 
-// @desc    Get all medications for a user
-// @route   GET /api/medications
+// @desc    Get all medications for a user (either self or shared)
+// @route   GET /api/medications/:userId
 // @access  Private
 const getMedications = async (req, res) => {
     try {
-        const medications = await Medication.find({ user: req.user.id }).sort({ startDate: -1 });
+        const targetUserId = req.params.userId;
+        const requesterId = req.user.id;
+        const AccessGrant = require('../models/accessGrantModel');
+
+        if (targetUserId === requesterId) {
+            const medications = await Medication.find({ user: targetUserId }).sort({ startDate: -1 });
+            return res.status(200).json(medications);
+        }
+
+        const grant = await AccessGrant.findOne({
+            owner: targetUserId,
+            grantee: requesterId,
+            status: 'active',
+        });
+
+        if (!grant) {
+            res.status(403);
+            throw new Error('You do not have permission to access these records.');
+        }
+
+        const medications = await Medication.find({ user: targetUserId }).sort({ startDate: -1 });
         res.status(200).json(medications);
     } catch (error) {
-        res.status(500).json({ message: 'Server Error' });
+        res.status(res.statusCode || 500).json({ message: error.message });
     }
 };
 

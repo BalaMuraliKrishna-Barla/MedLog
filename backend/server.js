@@ -26,6 +26,9 @@ app.use('/api/medicalevents', require('./routes/medicalEventRoutes'));
 app.use('/api/export', require('./routes/exportRoutes'));
 app.use('/api/appointments', require('./routes/appointmentRoutes'));
 
+app.use("/api/access", require("./routes/accessRoutes"));
+
+
 // A simple test route to check if the server is running
 app.get('/api', (req, res) => {
     res.json({ message: 'Welcome to the MedLog API' });

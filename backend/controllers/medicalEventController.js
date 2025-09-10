@@ -1,14 +1,34 @@
 const MedicalEvent = require('../models/medicalEventModel');
 
-// @desc    Get all medical events for a user
-// @route   GET /api/medicalevents
+// @desc    Get all medical events for a user (either self or shared)
+// @route   GET /api/medicalevents/:userId
 // @access  Private
 const getMedicalEvents = async (req, res) => {
     try {
-        const events = await MedicalEvent.find({ user: req.user.id }).sort({ date: -1 });
+        const targetUserId = req.params.userId;
+        const requesterId = req.user.id;
+        const AccessGrant = require('../models/accessGrantModel');
+
+        if (targetUserId === requesterId) {
+            const events = await MedicalEvent.find({ user: targetUserId }).sort({ date: -1 });
+            return res.status(200).json(events);
+        }
+
+        const grant = await AccessGrant.findOne({
+            owner: targetUserId,
+            grantee: requesterId,
+            status: 'active',
+        });
+
+        if (!grant) {
+            res.status(403);
+            throw new Error('You do not have permission to access these records.');
+        }
+
+        const events = await MedicalEvent.find({ user: targetUserId }).sort({ date: -1 });
         res.status(200).json(events);
     } catch (error) {
-        res.status(500).json({ message: 'Server Error' });
+        res.status(res.statusCode || 500).json({ message: error.message });
     }
 };
 

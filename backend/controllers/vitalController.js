@@ -1,16 +1,37 @@
 const Vital = require('../models/vitalModel');
 
-// @desc    Get all vitals for a user
-// @route   GET /api/vitals
+// @desc    Get all vitals for a user (either self or shared)
+// @route   GET /api/vitals/:userId
 // @access  Private
 const getVitals = async (req, res) => {
     try {
-        const vitals = await Vital.find({ user: req.user.id }).sort({ recordDate: -1 });
+        const targetUserId = req.params.userId;
+        const requesterId = req.user.id;
+        const AccessGrant = require('../models/accessGrantModel');
+
+        if (targetUserId === requesterId) {
+            const vitals = await Vital.find({ user: targetUserId }).sort({ recordDate: -1 });
+            return res.status(200).json(vitals);
+        }
+
+        const grant = await AccessGrant.findOne({
+            owner: targetUserId,
+            grantee: requesterId,
+            status: 'active',
+        });
+
+        if (!grant) {
+            res.status(403);
+            throw new Error('You do not have permission to access these records.');
+        }
+
+        const vitals = await Vital.find({ user: targetUserId }).sort({ recordDate: -1 });
         res.status(200).json(vitals);
     } catch (error) {
-        res.status(500).json({ message: 'Server Error' });
+        res.status(res.statusCode || 500).json({ message: error.message });
     }
 };
+
 
 // @desc    Add a new vital record
 // @route   POST /api/vitals

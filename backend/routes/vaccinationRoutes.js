@@ -10,7 +10,8 @@ const { protect } = require('../middleware/authMiddleware');
 
 router.use(protect); // Secure all routes in this file
 
-router.route('/').get(getVaccinations).post(addVaccination);
+router.route("/:userId").get(getVaccinations);
+router.route("/").post(addVaccination);
 router.route('/:id').put(updateVaccination).delete(deleteVaccination);
 
 module.exports = router;
