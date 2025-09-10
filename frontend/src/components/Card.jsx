@@ -1,16 +1,22 @@
 import React from 'react';
 import './Card.css';
 
-const Card = ({ title, children, onAdd }) => {
+const Card = ({ title, children, onAdd, icon, extraHeaderContent }) => {
   return (
     <div className="card">
       <div className="card__header">
-        <h3 className="card__title">{title}</h3>
-        {onAdd && (
-          <button onClick={onAdd} className="btn btn-primary">
-            + Add New
-          </button>
-        )}
+        <div className="card__title-container">
+            {icon && <span className="card__icon">{icon}</span>}
+            <h3 className="card__title">{title}</h3>
+        </div>
+        <div className="card__header-actions">
+            {extraHeaderContent}
+            {onAdd && (
+              <button onClick={onAdd} className="btn btn-primary">
+                + Add New
+              </button>
+            )}
+        </div>
       </div>
       <div className="card__content">
         {children}

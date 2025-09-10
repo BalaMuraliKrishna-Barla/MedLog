@@ -27,7 +27,7 @@ app.use('/api/vitals', require('./routes/vitalRoutes'));
 app.use('/api/medicalevents', require('./routes/medicalEventRoutes'));
 app.use('/api/export', require('./routes/exportRoutes'));
 app.use('/api/appointments', require('./routes/appointmentRoutes'));
-
+app.use('/api/customsections', require('./routes/customSectionRoutes'));
 app.use("/api/access", require("./routes/accessRoutes"));
 
 

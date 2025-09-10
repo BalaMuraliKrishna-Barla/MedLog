@@ -1,0 +1,70 @@
+.home-container {
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+.hero-section {
+    background: var(--gradient-primary);
+    color: white;
+    padding: 6rem 0;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hero-content {
+    max-width: 800px;
+    padding: 0 var(--sp-1-5);
+}
+
+.hero-title {
+    font-size: 3rem;
+    font-weight: var(--font-bold);
+    color: white;
+    margin-bottom: var(--sp-1);
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    margin-bottom: var(--sp-2);
+    opacity: 0.9;
+}
+
+.btn-lg {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    border-radius: 50px;
+}
+
+.features-section {
+    padding: 4rem var(--sp-1-5);
+    text-align: center;
+}
+
+.section-title {
+    font-size: var(--h1-font-size);
+    margin-bottom: var(--sp-3);
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--sp-2);
+}
+
+.feature-card {
+    background: var(--container-color);
+    padding: var(--sp-2);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+}
+
+.feature-icon {
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-bottom: var(--sp-1-5);
+}
+
+.feature-card h3 {
+    margin-bottom: var(--sp-1);
+}

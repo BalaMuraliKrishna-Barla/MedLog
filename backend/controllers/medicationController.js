@@ -32,16 +32,13 @@ const getMedications = async (req, res) => {
     }
 };
 
-// @desc    Add a new medication
-// @route   POST /api/medications
-// @access  Private
 const addMedication = async (req, res) => {
     try {
-        const { medicationName, dosage, frequency, reason, startDate, endDate } = req.body;
+        const { medicationName, dosage, frequency, instructions, reason, startDate, endDate } = req.body;
 
-        if (!medicationName || !dosage || !frequency) {
+        if (!medicationName || !dosage || !frequency || !frequency.timesPerDay) {
             res.status(400);
-            throw new Error('Medication name, dosage, and frequency are required.');
+            throw new Error('Medication name, dosage, and frequency details are required.');
         }
 
         const newMedication = await Medication.create({
@@ -49,6 +46,7 @@ const addMedication = async (req, res) => {
             medicationName,
             dosage,
             frequency,
+            instructions,
             reason,
             startDate,
             endDate,
@@ -60,11 +58,16 @@ const addMedication = async (req, res) => {
     }
 };
 
-// @desc    Update a medication record
-// @route   PUT /api/medications/:id
-// @access  Private
 const updateMedication = async (req, res) => {
     try {
+        const { medicationName, dosage, frequency, instructions, reason, startDate, endDate } = req.body;
+
+        // Add validation for the updated data
+        if (!medicationName || !dosage || !frequency || !frequency.timesPerDay) {
+            res.status(400);
+            throw new Error('Medication name, dosage, and frequency details are required.');
+        }
+        
         const medication = await Medication.findOne({ _id: req.params.id, user: req.user.id });
 
         if (!medication) {
@@ -72,7 +75,7 @@ const updateMedication = async (req, res) => {
             throw new Error('Medication record not found or user not authorized');
         }
 
-        const updatedMedication = await Medication.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        const updatedMedication = await Medication.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
         res.status(200).json(updatedMedication);
     } catch (error) {
         res.status(res.statusCode || 500).json({ message: error.message });

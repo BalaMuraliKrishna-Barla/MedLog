@@ -51,17 +51,17 @@
         {{#if medications.length}}
         <table>
             <tr>
-                <th>Medication</th>
-                <th>Dosage</th>
-                <th>Frequency</th>
-            </tr>
-            {{#each medications}}
-            <tr>
-                <td>{{this.medicationName}}</td>
-                <td>{{this.dosage}}</td>
-                <td>{{this.frequency}}</td>
-            </tr>
-            {{/each}}
+            <th>Medication</th>
+            <th>Dosage</th>
+            <th>Frequency</th>
+        </tr>
+        {{#each medications}}
+        <tr>
+            <td>{{this.medicationName}}</td>
+            <td>{{this.dosage}}</td>
+            <td>{{this.formattedFrequency}}</td> <!-- Use the formatted field -->
+        </tr>
+        {{/each}}
         </table>
         {{else}}
         <p class="no-records">No medication records found.</p>

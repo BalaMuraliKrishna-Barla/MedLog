@@ -1,3 +1,4 @@
+// REPLACE the entire file with this new version
 import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
 import * as api from '../services/api';
 import { useAuth } from './AuthContext';
@@ -6,9 +7,8 @@ const DataContext = createContext();
 
 export const DataProvider = ({ children }) => {
     const { user } = useAuth();
-    // Add appointments to the initial state
     const [records, setRecords] = useState({
-        allergies: [], medications: [], vaccinations: [], vitals: [], medicalEvents: [], appointments: []
+        allergies: [], medications: [], vaccinations: [], vitals: [], medicalEvents: [], appointments: [], customSections: []
     });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -18,15 +18,17 @@ export const DataProvider = ({ children }) => {
         setLoading(true);
         setError(null);
         try {
-            const [allergies, medications, vaccinations, vitals, medicalEvents, appointments] = await Promise.all([
+            // Fetch all record types in parallel
+            const [allergies, medications, vaccinations, vitals, medicalEvents, appointments, customSections] = await Promise.all([
                 api.getAllergies(user._id),
                 api.getMedications(user._id),
                 api.getVaccinations(user._id),
                 api.getVitals(user._id),
                 api.getMedicalEvents(user._id),
-                api.getAppointments(user._id), // Fetch appointments
+                api.getAppointments(user._id),
+                api.getCustomSections(user._id), // Fetch custom sections
             ]);
-            setRecords({ allergies, medications, vaccinations, vitals, medicalEvents, appointments });
+            setRecords({ allergies, medications, vaccinations, vitals, medicalEvents, appointments, customSections });
         } catch (err) {
             setError('Failed to fetch health records.');
             console.error(err);
@@ -39,19 +41,17 @@ export const DataProvider = ({ children }) => {
         if (user) {
             fetchData();
         } else {
-            setLoading(false);
+            setLoading(false); // If there's no user, we're not loading data.
         }
     }, [user, fetchData]);
 
-    // Function to add a new record to the state
     const addRecord = (type, newRecord) => {
         setRecords(prevRecords => ({
             ...prevRecords,
-            [type]: [...prevRecords[type], newRecord]
+            [type]: [newRecord, ...prevRecords[type]] // Add to the beginning of the list
         }));
     };
     
-    // Function to update a record in the state
     const updateRecord = (type, updatedRecord) => {
         setRecords(prevRecords => ({
             ...prevRecords,
@@ -59,7 +59,6 @@ export const DataProvider = ({ children }) => {
         }));
     };
 
-    // Function to delete a record from the state
     const deleteRecord = (type, recordId) => {
         setRecords(prevRecords => ({
             ...prevRecords,
@@ -68,13 +67,7 @@ export const DataProvider = ({ children }) => {
     };
 
     const dataContextValue = {
-        records,
-        loading,
-        error,
-        fetchData,
-        addRecord,
-        updateRecord,
-        deleteRecord,
+        records, loading, error, fetchData, addRecord, updateRecord, deleteRecord,
     };
 
     return (

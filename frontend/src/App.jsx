@@ -18,7 +18,7 @@ import PatientRecordPage from './pages/PatientRecordPage';
 
 
 // Placeholder Pages
-const HomePage = () => <div className="container" style={{ textAlign: 'center', paddingTop: '5rem' }}><h1>Welcome to MedLog</h1><p>Your personal health record tracker.</p></div>;
+import HomePage from './pages/HomePage';
 const NotFoundPage = () => <div className="container" style={{ paddingTop: '5rem' }}><h1>404 - Not Found</h1></div>;
 
 function App() {
@@ -26,7 +26,7 @@ function App() {
     <Router>
       <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         <Navbar />
-        <main style={{ flex: 1, paddingTop: '4.5rem' }}>
+        <main style={{ flex: 1, paddingTop: '4.5rem' }} className="fade-in">
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<HomePage />} />

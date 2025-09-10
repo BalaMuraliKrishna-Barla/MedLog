@@ -1,47 +1,35 @@
+/* REPLACE the entire frontend/src/pages/AppointmentsPage.css file */
+
 .appointments-list {
     margin-bottom: var(--sp-2);
 }
 
-.appointments-list h3 {
+.appointments-list:last-child {
+    margin-bottom: 0;
+}
+
+.list-subtitle {
+    font-size: var(--h3-font-size);
     margin-bottom: var(--sp-1);
     color: var(--primary-color);
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--body-color);
 }
 
-.appointment-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--sp-1);
-    border-bottom: 1px solid var(--border-color);
+/* We can now reuse the .record-item styles from RecordList.css */
+/* This makes our styling more consistent */
+.appointment-item.record-item {
+    transition: background-color 0.2s;
 }
 
-.appointment-item:last-child {
-    border-bottom: none;
-}
-
-.appointment-details h4 {
-    margin-bottom: 0.25rem;
+.appointment-item.record-item:hover {
+    background-color: var(--body-color);
 }
 
 .appointment-details p {
-    font-size: var(--small-font-size);
-    color: var(--secondary-color);
+    margin-bottom: 0.25rem;
 }
 
-.appointment-actions button {
-    margin-left: 0.5rem;
-    padding: 0.3rem 0.6rem;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.btn-edit {
-    background-color: var(--warning-color);
-    color: #fff;
-}
-
-.btn-delete {
-    background-color: var(--danger-color);
-    color: #fff;
+.appointment-details p:last-child {
+    margin-bottom: 0;
 }

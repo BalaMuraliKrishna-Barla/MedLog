@@ -158,3 +158,14 @@ export const revokeAccess = (grantId) => apiRequest(`/access/revoke/${grantId}`,
 export const getPendingGrants = () => apiRequest('/access/pending', 'GET');
 export const acceptGrant = (grantId) => apiRequest(`/access/accept/${grantId}`, 'POST');
 export const getPatientList = () => apiRequest('/access/patients', 'GET');
+
+
+
+/* ===============================================================
+                      CUSTOM SECTIONS API
+   =============================================================== */
+export const getCustomSections = (userId) => getRecords('customsections', userId);
+export const addCustomSection = (data) => apiRequest('/customsections', 'POST', data);
+export const deleteCustomSection = (sectionId) => apiRequest(`/customsections/${sectionId}`, 'DELETE');
+export const addItemToSection = (sectionId, itemData) => apiRequest(`/customsections/${sectionId}/items`, 'POST', itemData);
+export const deleteItemFromSection = (sectionId, itemId) => apiRequest(`/customsections/${sectionId}/items/${itemId}`, 'DELETE');

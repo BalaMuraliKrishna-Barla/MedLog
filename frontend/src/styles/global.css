@@ -3,9 +3,25 @@
 
 /* ===== CSS VARIABLES ===== */
 :root {
-    /* Colors */
-    --primary-color: #007bff;
-    --primary-color-dark: #0056b3;
+    /* JADE COLOR PALETTE */
+    /* HDR oklab colors (for modern browsers) */
+    --clr-jade-a0: oklab(63.2% -0.134 0.047);
+    --clr-jade-a10: oklab(72.5% -0.107 0.042);
+    --clr-jade-a20: oklab(82.6% -0.068 0.04);
+    --clr-jade-a30: oklab(94% -0.03 0.011);
+    /* Fallback colors */
+    --clr-jade-a0-fallback: #00A36C;
+    --clr-jade-a10-fallback: #5FBC8B;
+    --clr-jade-a20-fallback: #A2D5AB;
+    --clr-jade-a30-fallback: #DAF2E4;
+    
+    /* Mapped Colors */
+    --primary-color: var(--clr-jade-a0, --clr-jade-a0-fallback);
+    --primary-color-dark: oklab(55% -0.13 0.04); /* A calculated darker shade */
+    --primary-color-light: var(--clr-jade-a10, --clr-jade-a10-fallback);
+    --body-color: var(--clr-jade-a30, --clr-jade-a30-fallback);
+
+    /* Other Colors */
     --secondary-color: #6c757d;
     --success-color: #28a745;
     --danger-color: #dc3545;
@@ -13,12 +29,11 @@
     --light-color: #f8f9fa;
     --dark-color: #343a40;
 
-    --text-color: #495057;
-    --text-color-light: #adb5bd;
-    --body-color: #fdfdff;
+    --text-color: #333;
+    --text-color-light: #f1f1f1;
     --container-color: #ffffff;
 
-    --gradient-primary: linear-gradient(135deg, #007bff 0%, #0056b3 100%);
+    --gradient-primary: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-dark) 100%);
     --gradient-danger: linear-gradient(135deg, #dc3545 0%, #a71d2a 100%);
 
     /* Typography */

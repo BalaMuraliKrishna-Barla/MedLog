@@ -1,68 +1,66 @@
-import React, { useState } from 'react';
+// REPLACE the entire file with this new version
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import * as api from '../services/api';
+import toast from 'react-hot-toast';
 import Card from '../components/Card';
+import Spinner from '../components/Spinner';
 import './ProfilePage.css';
 
 const ProfilePage = () => {
-  const { user } = useAuth();
-  const [loadingPdf, setLoadingPdf] = useState(false);
-  const [loadingJson, setLoadingJson] = useState(false);
+  const { user, login } = useAuth(); // We need login to update the context
+  const [formData, setFormData] = useState({ name: '', dateOfBirth: '' });
+  const [loading, setLoading] = useState(true);
 
-  const handleDownloadPdf = async () => {
-    setLoadingPdf(true);
-    try {
-      const blob = await api.exportPdf();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `MedLog_Report_${user.name}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      alert('Failed to download PDF report.');
-    } finally {
-      setLoadingPdf(false);
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        name: user.name,
+        dateOfBirth: user.dateOfBirth ? new Date(user.dateOfBirth).toISOString().split('T')[0] : '',
+      });
+      setLoading(false);
     }
+  }, [user]);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
   
-  const handleDownloadJson = async () => {
-    setLoadingJson(true);
-    try {
-      const data = await api.exportJson();
-      const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(data, null, 2))}`;
-      const a = document.createElement('a');
-      a.href = jsonString;
-      a.download = `MedLog_Backup_${user.name}.json`;
-      a.click();
-    } catch (error) {
-      alert('Failed to download JSON backup.');
-    } finally {
-      setLoadingJson(false);
-    }
-  };
+  // NOTE: This handleSubmit is a placeholder for a future backend update.
+  // We don't have a backend route to update the user model yet.
+  const handleSubmit = (e) => {
+      e.preventDefault();
+      toast.error("Profile editing is not yet enabled on the backend.");
+      // In the future, you would call an API like this:
+      // const updatedUser = await api.updateUser(user._id, formData);
+      // login(updatedUser, localStorage.getItem('userToken')); // Update context
+      // toast.success('Profile updated!');
+  }
+
+  if (loading) return <Spinner />;
 
   return (
     <div className="container">
-      <Card title="Profile & Settings">
-        <div className="profile-info">
-          <p><strong>Name:</strong> {user?.name}</p>
-          <p><strong>Email:</strong> {user?.email}</p>
-        </div>
-        <div className="export-section">
-          <h3>Data Portability</h3>
-          <p>Download a copy of your health records.</p>
-          <div className="export-buttons">
-            <button className="btn btn-secondary" onClick={handleDownloadPdf} disabled={loadingPdf}>
-              {loadingPdf ? 'Generating...' : 'Download PDF Summary'}
-            </button>
-            <button className="btn btn-secondary" onClick={handleDownloadJson} disabled={loadingJson}>
-              {loadingJson ? 'Generating...' : 'Export All Data (JSON)'}
-            </button>
-          </div>
-        </div>
+      <Card title="My Profile">
+        <form className="profile-form" onSubmit={handleSubmit}>
+            <div className="input-group">
+                <label>Full Name</label>
+                <input name="name" value={formData.name} onChange={handleChange} />
+            </div>
+             <div className="input-group">
+                <label>Date of Birth</label>
+                <input name="dateOfBirth" type="date" value={formData.dateOfBirth} onChange={handleChange} />
+            </div>
+             <div className="input-group">
+                <label>Email</label>
+                <input value={user?.email} disabled />
+            </div>
+            <div className="input-group">
+                <label>Role</label>
+                <input value={user?.role} disabled />
+            </div>
+            <button type="submit" className="btn btn-primary">Save Changes</button>
+        </form>
       </Card>
     </div>
   );

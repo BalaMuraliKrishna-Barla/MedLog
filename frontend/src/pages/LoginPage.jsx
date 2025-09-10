@@ -1,7 +1,11 @@
+// REPLACE the entire frontend/src/pages/LoginPage.jsx file
+
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { loginUser } from '../services/api';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faEnvelope, faLock } from '@fortawesome/free-solid-svg-icons';
 import '../styles/Auth.css';
 
 const LoginPage = () => {
@@ -16,6 +20,12 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    
+    if (!email || !password) {
+        setError('Please enter both email and password.');
+        return;
+    }
+    
     setLoading(true);
 
     try {
@@ -37,7 +47,7 @@ const LoginPage = () => {
         
         <form className="auth-form" onSubmit={handleSubmit}>
           <div className="input-group">
-            <label htmlFor="email">Email Address</label>
+            <label htmlFor="email">Email Address<span className="required-star">*</span></label>
             <input 
               type="email" 
               id="email" 
@@ -46,10 +56,11 @@ const LoginPage = () => {
               placeholder="you@example.com" 
               required 
             />
+            <FontAwesomeIcon icon={faEnvelope} className="input-icon" />
           </div>
           
           <div className="input-group">
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password">Password<span className="required-star">*</span></label>
             <input 
               type="password" 
               id="password" 
@@ -58,6 +69,7 @@ const LoginPage = () => {
               placeholder="••••••••" 
               required 
             />
+            <FontAwesomeIcon icon={faLock} className="input-icon" />
           </div>
 
           {error && <div className="error-message">{error}</div>}

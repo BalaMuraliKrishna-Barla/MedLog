@@ -2,13 +2,13 @@ import React, { useState } from 'react';
 import { useData } from '../context/DataContext';
 import Card from './Card';
 import Modal from './Modal';
-import VaccinationForm from './VaccinationForm';
+import VitalForm from './VitalForm';
 import * as api from '../services/api';
-import '../styles/RecordList.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSyringe } from '@fortawesome/free-solid-svg-icons';
+import { faHeartbeat } from '@fortawesome/free-solid-svg-icons';
+import '../styles/RecordList.css';
 
-const VaccinationSection = () => {
+const VitalSection = () => {
     const { records, deleteRecord } = useData();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
@@ -24,10 +24,10 @@ const VaccinationSection = () => {
     };
 
     const handleDelete = async (id) => {
-        if (window.confirm('Are you sure you want to delete this vaccination record?')) {
+        if (window.confirm('Are you sure you want to delete this vitals record?')) {
             try {
-                await api.deleteVaccination(id);
-                deleteRecord('vaccinations', id);
+                await api.deleteVital(id);
+                deleteRecord('vitals', id);
             } catch (err) {
                 alert(err.message);
             }
@@ -36,14 +36,14 @@ const VaccinationSection = () => {
 
     return (
         <>
-            <Card title="Vaccinations" onAdd={() => openModal()} icon={<FontAwesomeIcon icon={faSyringe} color="#17a2b8" />}>
-                {records.vaccinations.length > 0 ? (
+            <Card title="Vitals" onAdd={() => openModal()} icon={<FontAwesomeIcon icon={faHeartbeat} color="#dc3545" />}>
+                {records.vitals.length > 0 ? (
                     <div className="record-list">
-                        {records.vaccinations.map(item => (
+                        {records.vitals.map(item => (
                             <div key={item._id} className="record-item">
                                 <div className="record-details">
-                                    <h4>{item.vaccineName}</h4>
-                                    <p>Date: {new Date(item.dateAdministered).toLocaleDateString()}</p>
+                                    <h4>{new Date(item.recordDate).toLocaleDateString()}</h4>
+                                    <p>BP: {item.bloodPressure || 'N/A'} | HR: {item.heartRate || 'N/A'} bpm</p>
                                 </div>
                                 <div className="record-actions">
                                     <button onClick={() => openModal(item)} className="btn-edit">Edit</button>
@@ -53,15 +53,15 @@ const VaccinationSection = () => {
                         ))}
                     </div>
                 ) : (
-                    <p className="no-records">No vaccination records found.</p>
+                    <p className="no-records">No vitals recorded yet.</p>
                 )}
             </Card>
 
-            <Modal isOpen={isModalOpen} onClose={closeModal} title={selectedItem ? 'Edit Vaccination' : 'Add New Vaccination'}>
-                <VaccinationForm existingVaccination={selectedItem} onFormSubmit={closeModal} />
+            <Modal isOpen={isModalOpen} onClose={closeModal} title={selectedItem ? 'Edit Vitals' : 'Add New Vitals'}>
+                <VitalForm existingVital={selectedItem} onFormSubmit={closeModal} />
             </Modal>
         </>
     );
 };
 
-export default VaccinationSection;
+export default VitalSection;

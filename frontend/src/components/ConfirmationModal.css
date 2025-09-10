@@ -1,0 +1,17 @@
+.confirmation-content p {
+    margin-bottom: var(--sp-1-5);
+    font-size: var(--normal-font-size);
+    color: var(--secondary-color);
+    text-align: center;
+}
+
+.confirmation-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: var(--sp-1);
+}
+
+.btn-danger {
+    background: var(--gradient-danger);
+    color: white;
+}

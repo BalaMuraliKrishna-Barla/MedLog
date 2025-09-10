@@ -20,3 +20,13 @@
         grid-template-columns: repeat(2, 1fr);
     }
 }
+
+
+/* ADD THIS to the end of frontend/src/styles/Dashboard.css */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--sp-2);
+}
+
