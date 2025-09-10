@@ -141,6 +141,7 @@ const sendMedicationReminderEmail = (user, medications) => {
 };
 
 const startScheduledJobs = () => {
+  // const cronSchedule = "0 8 * * * *";
   const cronSchedule = "0 8 * * * *";
 
   cron.schedule(cronSchedule, async () => {
