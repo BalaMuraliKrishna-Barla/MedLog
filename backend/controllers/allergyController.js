@@ -1,5 +1,5 @@
 const Allergy = require('../models/allergyModel');
-
+const AccessGrant = require("../models/accessGrantModel");
 // @desc    Get all allergies for a user (either self or shared)
 // @route   GET /api/allergies/:userId
 // @access  Private

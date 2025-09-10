@@ -11,9 +11,12 @@ const { protect } = require('../middleware/authMiddleware');
 // Protect all routes
 router.use(protect);
 
-// Chain routes for the same path
-router.route('/:userId').get(getAllergies); // For getting records
-router.route('/').post(addAllergy); // For creating a new record for self
-router.route('/:id').put(updateAllergy).delete(deleteAllergy);
+// GET route is now specific to avoid conflicts
+router.route('/user/:userId').get(getAllergies);
 
+// POST route is for the current user to create their own record
+router.route('/').post(addAllergy);
+
+// Routes for updating/deleting a SPECIFIC record by its ID
+router.route('/:id').put(updateAllergy).delete(deleteAllergy);
 module.exports = router;

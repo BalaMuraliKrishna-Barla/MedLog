@@ -1,5 +1,4 @@
 const Vital = require('../models/vitalModel');
-
 // @desc    Get all vitals for a user (either self or shared)
 // @route   GET /api/vitals/:userId
 // @access  Private

@@ -1,0 +1,53 @@
+.sharing-form p {
+    margin-bottom: var(--sp-1);
+    color: var(--secondary-color);
+}
+
+.sharing-form .input-group {
+    display: flex;
+    gap: 1rem;
+}
+
+.grant-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-1);
+}
+
+.grant-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--sp-1);
+    background-color: var(--light-color);
+    border-radius: var(--border-radius);
+}
+
+.grant-details h4 {
+    margin: 0;
+    font-size: var(--normal-font-size);
+}
+
+.grant-details p {
+    margin: 0.25rem 0 0;
+    font-size: var(--small-font-size);
+}
+
+.status {
+    font-weight: var(--font-semibold);
+    text-transform: capitalize;
+}
+
+.status-pending {
+    color: var(--warning-color);
+}
+
+.status-active {
+    color: var(--success-color);
+}
+
+.btn-delete {
+    background-color: var(--danger-color);
+    color: white;
+    padding: 0.5rem 1rem;
+}

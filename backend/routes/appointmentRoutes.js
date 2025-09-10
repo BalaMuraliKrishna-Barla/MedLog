@@ -8,9 +8,16 @@ const {
 } = require('../controllers/appointmentController');
 const { protect } = require('../middleware/authMiddleware');
 
+
 router.use(protect);
 
-router.route('/').get(getAppointments).post(addAppointment);
-router.route('/:id').put(updateAppointment).delete(deleteAppointment);
+// GET route is now more specific to avoid conflicts with '/:id'
+router.route("/user/:userId").get(getAppointments);
+
+// POST route is for the user to create their OWN appointment
+router.route("/").post(addAppointment);
+
+// Routes for updating/deleting a SPECIFIC appointment by its ID
+router.route("/:id").put(updateAppointment).delete(deleteAppointment);
 
 module.exports = router;

@@ -2,6 +2,7 @@ const express = require('express');
 require('dotenv').config();
 const connectDB = require('./config/db');
 const { startScheduledJobs } = require('./services/notificationService');
+const cors = require('cors');
 
 
 // Connect to Database
@@ -11,6 +12,7 @@ startScheduledJobs();
 
 const app = express();
 
+app.use(cors());
 // Middleware to parse JSON and urlencoded bodies
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));

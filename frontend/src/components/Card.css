@@ -1,0 +1,26 @@
+
+.card {
+    background-color: var(--container-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    margin-bottom: var(--sp-2);
+    overflow: hidden;
+    /* Ensures child elements respect border radius */
+}
+
+.card__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--sp-1) var(--sp-1-5);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.card__title {
+    font-size: var(--h3-font-size);
+    margin: 0;
+}
+
+.card__content {
+    padding: var(--sp-1-5);
+}

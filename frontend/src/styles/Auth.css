@@ -1,0 +1,99 @@
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 9rem);
+    /* Full height minus navbar and footer */
+    padding: var(--sp-2);
+}
+
+.auth-card {
+    background-color: var(--container-color);
+    padding: var(--sp-2) var(--sp-2-5);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    width: 100%;
+    max-width: 420px;
+    text-align: center;
+}
+
+.auth-title {
+    font-size: var(--h2-font-size);
+    margin-bottom: var(--sp-0-5);
+}
+
+.auth-subtitle {
+    color: var(--secondary-color);
+    margin-bottom: var(--sp-2);
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-1-5);
+}
+
+.input-group {
+    text-align: left;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: var(--sp-0-5);
+    font-weight: var(--font-medium);
+}
+
+.input-group input {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: var(--normal-font-size);
+    font-family: var(--body-font);
+}
+
+.input-group input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+}
+
+.auth-footer {
+    margin-top: var(--sp-1-5);
+    font-size: var(--small-font-size);
+}
+
+.auth-footer a {
+    color: var(--primary-color);
+    font-weight: var(--font-medium);
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
+
+.error-message {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: var(--danger-color);
+    padding: var(--sp-1);
+    border-radius: var(--border-radius);
+    border: 1px solid rgba(220, 53, 69, 0.2);
+    margin-bottom: var(--sp-1-5);
+    text-align: center;
+}
+
+.input-group select,
+.input-group textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: var(--normal-font-size);
+    font-family: var(--body-font);
+    background-color: white;
+}
+
+.input-group textarea {
+    min-height: 80px;
+    resize: vertical;
+}

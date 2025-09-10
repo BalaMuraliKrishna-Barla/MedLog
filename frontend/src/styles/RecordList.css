@@ -1,0 +1,66 @@
+.record-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-1);
+}
+
+.record-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--sp-1);
+    border-radius: var(--border-radius);
+    background-color: var(--light-color);
+    border: 1px solid var(--border-color);
+}
+
+.record-details {
+    flex: 1;
+}
+
+.record-details h4 {
+    font-weight: var(--font-medium);
+    margin-bottom: 0.25rem;
+}
+
+.record-details p {
+    font-size: var(--small-font-size);
+    color: var(--secondary-color);
+    margin: 0;
+}
+
+.record-actions button {
+    margin-left: 0.5rem;
+    padding: 0.3rem 0.6rem;
+    font-size: var(--small-font-size);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    color: white;
+}
+
+.btn-edit {
+    background-color: var(--warning-color);
+}
+
+.btn-delete {
+    background-color: var(--danger-color);
+}
+
+.no-records {
+    color: var(--secondary-color);
+    text-align: center;
+    padding: var(--sp-1) 0;
+}
+
+/* Add to src/styles/RecordList.css */
+.record-item-link {
+    text-decoration: none;
+    color: inherit;
+    transition: transform 0.2s;
+}
+
+.record-item-link:hover .record-item {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}   

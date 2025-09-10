@@ -1,0 +1,21 @@
+.profile-info {
+    margin-bottom: var(--sp-2);
+}
+
+.profile-info p {
+    margin-bottom: var(--sp-0-5);
+}
+
+.export-section h3 {
+    margin-bottom: var(--sp-0-5);
+}
+
+.export-section p {
+    color: var(--secondary-color);
+    margin-bottom: var(--sp-1-5);
+}
+
+.export-buttons {
+    display: flex;
+    gap: var(--sp-1);
+}
