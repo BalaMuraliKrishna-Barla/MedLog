@@ -12,7 +12,8 @@ const { protect } = require('../middleware/authMiddleware');
 router.use(protect);
 
 // Chain routes for the same path
-router.route('/').get(getAllergies).post(addAllergy);
+router.route('/:userId').get(getAllergies); // For getting records
+router.route('/').post(addAllergy); // For creating a new record for self
 router.route('/:id').put(updateAllergy).delete(deleteAllergy);
 
 module.exports = router;
