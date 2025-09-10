@@ -28,16 +28,7 @@ app.use('/api/medicalevents', require('./routes/medicalEventRoutes'));
 app.use('/api/export', require('./routes/exportRoutes'));
 app.use('/api/appointments', require('./routes/appointmentRoutes'));
 app.use('/api/customsections', require('./routes/customSectionRoutes'));
-app.use("/api/access", require("./routes/accessRoutes"));
-
-
-//Health Routes
-app.use("/api/allergies", require("./routes/allergyRoutes"));
-app.use("/api/appointments", require("./routes/appointmentRoutes"));
-app.use("/api/vaccinations", require("./routes/vaccinationRoutes"));
-app.use("/api/medications", require("./routes/medicationRoutes"));
-app.use("/api/vitals", require("./routes/vitalRoutes"));
-app.use("/api/medicalevents", require("./routes/medicalEventRoutes"));
+app.use('/api/access', require('./routes/accessRoutes'));
 
 
 // A simple test route to check if the server is running
