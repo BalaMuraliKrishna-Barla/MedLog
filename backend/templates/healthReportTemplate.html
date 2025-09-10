@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Health Report</title>
+    <style>
+        body { font-family: 'Helvetica', sans-serif; color: #333; }
+        .header { text-align: center; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 20px; }
+        .header h1 { margin: 0; }
+        .header p { margin: 5px 0; color: #555; }
+        .section { margin-bottom: 30px; }
+        .section-title { font-size: 1.4em; color: #0056b3; border-bottom: 1px solid #ccc; padding-bottom: 5px; margin-bottom: 15px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .no-records { color: #888; font-style: italic; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Personal Health Record Summary</h1>
+        <p><strong>Name:</strong> {{reportData.name}}</p>
+        <p><strong>Email:</strong> {{reportData.email}}</p>
+        <p><strong>Date of Birth:</strong> {{reportData.formattedDob}}</p>
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Allergies</h2>
+        {{#if allergies.length}}
+        <table>
+            <tr>
+                <th>Allergen</th>
+                <th>Severity</th>
+                <th>Reaction</th>
+            </tr>
+            {{#each allergies}}
+            <tr>
+                <td>{{this.allergen}}</td>
+                <td>{{this.severity}}</td>
+                <td>{{this.reaction}}</td>
+            </tr>
+            {{/each}}
+        </table>
+        {{else}}
+        <p class="no-records">No allergy records found.</p>
+        {{/if}}
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Medications</h2>
+        {{#if medications.length}}
+        <table>
+            <tr>
+                <th>Medication</th>
+                <th>Dosage</th>
+                <th>Frequency</th>
+            </tr>
+            {{#each medications}}
+            <tr>
+                <td>{{this.medicationName}}</td>
+                <td>{{this.dosage}}</td>
+                <td>{{this.frequency}}</td>
+            </tr>
+            {{/each}}
+        </table>
+        {{else}}
+        <p class="no-records">No medication records found.</p>
+        {{/if}}
+    </div>
+
+    <div class="section">
+        <h2 class="section-title">Vaccinations</h2>
+         {{#if vaccinations.length}}
+        <table>
+            <tr>
+                <th>Vaccine</th>
+                <th>Date Administered</th>
+            </tr>
+            {{#each vaccinations}}
+            <tr>
+                <td>{{this.vaccineName}}</td>
+                <td>{{this.formattedDate}}</td>
+            </tr>
+            {{/each}}
+        </table>
+        {{else}}
+        <p class="no-records">No vaccination records found.</p>
+        {{/if}}
+    </div>
+
+</body>
+</html>

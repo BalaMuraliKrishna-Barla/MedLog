@@ -1,15 +1,19 @@
 const express = require('express');
 require('dotenv').config();
 const connectDB = require('./config/db');
+const { startScheduledJobs } = require('./services/notificationService');
+
 
 // Connect to Database
 connectDB();
 
+startScheduledJobs();
+
 const app = express();
 
 // Middleware to parse JSON and urlencoded bodies
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Routes
 app.use('/api/users', require('./routes/userRoutes'));
@@ -19,6 +23,8 @@ app.use('/api/vaccinations', require('./routes/vaccinationRoutes'));
 app.use('/api/medications', require('./routes/medicationRoutes'));
 app.use('/api/vitals', require('./routes/vitalRoutes'));
 app.use('/api/medicalevents', require('./routes/medicalEventRoutes'));
+app.use('/api/export', require('./routes/exportRoutes'));
+app.use('/api/appointments', require('./routes/appointmentRoutes'));
 
 // A simple test route to check if the server is running
 app.get('/api', (req, res) => {
