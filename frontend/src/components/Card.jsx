@@ -1,9 +1,16 @@
 import React from 'react';
+import { motion } from 'framer-motion';
 import './Card.css';
 
 const Card = ({ title, children, onAdd, icon, extraHeaderContent, readOnly = false }) => {
   return (
-    <div className="card">
+    <motion.div 
+      className="card"
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
+      transition={{ duration: 0.5, ease: 'easeOut' }}
+    >
       <div className="card__header">
         <div className="card__title-container">
             {icon && <span className="card__icon">{icon}</span>}
@@ -21,7 +28,7 @@ const Card = ({ title, children, onAdd, icon, extraHeaderContent, readOnly = fal
       <div className="card__content">
         {children}
       </div>
-    </div>
+    </motion.div>
   );
 };
 

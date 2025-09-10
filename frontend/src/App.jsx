@@ -1,14 +1,13 @@
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 
-// Core Components & Context
+// --- ALL YOUR ORIGINAL IMPORTS ARE PRESERVED ---
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ProtectedRoute from './components/ProtectedRoute';
 import { DataProvider } from './context/DataContext';
 import { useAuth } from './context/AuthContext';
-
-// Pages
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import DashboardPage from './pages/DashboardPage';
@@ -21,23 +20,67 @@ import DoctorDashboardPage from './pages/DoctorDashboardPage';
 import HomePage from './pages/HomePage';
 import CustomSectionsPage from './pages/CustomSectionsPage';
 
-
-// Placeholder Pages
 const NotFoundPage = () => <div className="container" style={{ paddingTop: '5rem' }}><h1>404 - Not Found</h1></div>;
 
-// THIS IS THE MISSING COMPONENT DEFINITION
-// It acts as a router to show the correct dashboard based on user role.
 const Dashboard = () => {
     const { user } = useAuth();
-    if (user.role === 'Doctor') {
-        return <DoctorDashboardPage />;
-    }
-    // For Patients, DashboardLayout handles the nested routes via its <Outlet />
+    if (user.role === 'Doctor') return <DoctorDashboardPage />;
     return <DashboardLayout />;
 };
 
+// This new component contains only the Routes and Animation logic.
+// All business logic remains in the main App component.
+const AnimatedRoutes = () => {
+    const location = useLocation();
+    const { isAuthenticated } = useAuth(); // We need this to keep the routing logic the same
+
+    return (
+        <AnimatePresence mode="wait">
+            <motion.div
+                key={location.pathname}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+            >
+                <Routes location={location}>
+                    {/* --- ALL YOUR ORIGINAL ROUTES AND LOGIC ARE PRESERVED --- */}
+                    <Route path="/" element={!isAuthenticated ? <HomePage /> : <Navigate to="/dashboard" />} />
+                    <Route path="/login" element={!isAuthenticated ? <LoginPage /> : <Navigate to="/dashboard" />} />
+                    <Route path="/register" element={!isAuthenticated ? <RegisterPage /> : <Navigate to="/dashboard" />} />
+
+                    <Route path="/dashboard/*" element={
+                        <ProtectedRoute>
+                            <DataProvider>
+                                <Routes>
+                                    <Route path="/" element={<Dashboard />}>
+                                        <Route index element={<Navigate to="allergies" replace />} />
+                                        <Route path="allergies" element={<DashboardPage />} />
+                                        <Route path="medications" element={<DashboardPage />} />
+                                        <Route path="vaccinations" element={<DashboardPage />} />
+                                        <Route path="vitals" element={<DashboardPage />} />
+                                        <Route path="history" element={<DashboardPage />} />
+                                        <Route path="custom" element={<CustomSectionsPage />} />
+                                    </Route>
+                                </Routes>
+                            </DataProvider>
+                        </ProtectedRoute>
+                    }/>
+                    
+                    <Route path="/appointments" element={<ProtectedRoute><DataProvider><AppointmentsPage /></DataProvider></ProtectedRoute>} />
+                    <Route path="/profile" element={<ProtectedRoute><DataProvider><ProfilePage /></DataProvider></ProtectedRoute>} />
+                    <Route path="/sharing" element={<ProtectedRoute><SharingPage /></ProtectedRoute>} />
+                    <Route path="/records/:userId" element={<ProtectedRoute><DataProvider><PatientRecordPage /></DataProvider></ProtectedRoute>} />
+                    <Route path="*" element={<NotFoundPage />} />
+                </Routes>
+            </motion.div>
+        </AnimatePresence>
+    );
+};
+
+// The main App component's structure and logic is preserved.
 function App() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isLoading } = useAuth();
   
   if (isLoading) {
     return (
@@ -51,44 +94,8 @@ function App() {
     <Router>
       <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
         <Navbar />
-          <main style={{ flex: 1, paddingTop: 'calc(4.5rem + var(--sp-2))', paddingBottom: 'var(--sp-2)' }} className="fade-in">          <Routes>
-            {/* Public Routes */}
-            <Route path="/" element={!isAuthenticated ? <HomePage /> : <Navigate to="/dashboard" />} />
-            <Route path="/login" element={!isAuthenticated ? <LoginPage /> : <Navigate to="/dashboard" />} />
-            <Route path="/register" element={!isAuthenticated ? <RegisterPage /> : <Navigate to="/dashboard" />} />
-
-            {/* Main Dashboard Route using a wildcard */}
-            <Route 
-                path="/dashboard/*"
-                element={
-                    <ProtectedRoute>
-                        <DataProvider>
-                            {/* This inner Routes block handles the logic for /dashboard */}
-                            <Routes>
-                                {/* The parent route uses the Dashboard component to decide which layout to show */}
-                                <Route path="/" element={<Dashboard />}>
-                                    {/* These routes are ONLY for Patients and render inside DashboardLayout's <Outlet> */}
-                                    <Route index element={<Navigate to="allergies" replace />} />
-                                    <Route path="allergies" element={<DashboardPage />} />
-                                    <Route path="medications" element={<DashboardPage />} />
-                                    <Route path="vaccinations" element={<DashboardPage />} />
-                                    <Route path="vitals" element={<DashboardPage />} />
-                                    <Route path="history" element={<DashboardPage />} />
-                                    <Route path="custom" element={<CustomSectionsPage />} />
-                                </Route>
-                            </Routes>
-                        </DataProvider>
-                    </ProtectedRoute>
-                }
-            />
-            
-            {/* Other Top-Level Protected Routes */}
-            <Route path="/appointments" element={<ProtectedRoute><DataProvider><AppointmentsPage /></DataProvider></ProtectedRoute>} />
-            <Route path="/profile" element={<ProtectedRoute><DataProvider><ProfilePage /></DataProvider></ProtectedRoute>} />
-            <Route path="/sharing" element={<ProtectedRoute><SharingPage /></ProtectedRoute>} />
-            <Route path="/records/:userId" element={<ProtectedRoute><DataProvider><PatientRecordPage /></DataProvider></ProtectedRoute>} />
-            <Route path="*" element={<NotFoundPage />} />
-          </Routes>
+        <main style={{ flex: 1, paddingTop: 'calc(4.5rem + var(--sp-2))', paddingBottom: 'var(--sp-2)' }} className="fade-in">
+           <AnimatedRoutes />
         </main>
         <Footer />
       </div>

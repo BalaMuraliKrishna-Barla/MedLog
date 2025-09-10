@@ -2,19 +2,16 @@
     animation: fadeIn 0.5s ease-in-out;
 }
 
+/* ===== Hero Section ===== */
 .hero-section {
     background: var(--gradient-primary);
     color: white;
     padding: 6rem 0;
     text-align: center;
-    display: flex;
-    justify-content: center;
-    align-items: center;
 }
 
 .hero-content {
     max-width: 800px;
-    padding: 0 var(--sp-1-5);
 }
 
 .hero-title {
@@ -22,33 +19,49 @@
     font-weight: var(--font-bold);
     color: white;
     margin-bottom: var(--sp-1);
+    line-height: 1.2;
 }
 
 .hero-subtitle {
     font-size: 1.25rem;
     margin-bottom: var(--sp-2);
     opacity: 0.9;
+    max-width: 650px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .btn-lg {
-    padding: 1rem 2rem;
+    padding: 1rem 2.5rem;
     font-size: 1.1rem;
     border-radius: 50px;
+    font-weight: var(--font-semibold);
 }
 
+/* ===== Features Section ===== */
 .features-section {
-    padding: 4rem var(--sp-1-5);
+    padding: 5rem 0;
     text-align: center;
 }
 
 .section-title {
     font-size: var(--h1-font-size);
+    margin-bottom: var(--sp-1);
+    color: var(--dark-color);
+}
+
+.section-subtitle {
+    font-size: 1.15rem;
+    color: var(--secondary-color);
     margin-bottom: var(--sp-3);
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .features-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: var(--sp-2);
 }
 
@@ -57,14 +70,91 @@
     padding: var(--sp-2);
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.feature-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 25px rgba(0, 0, 0, 0.1);
 }
 
 .feature-icon {
-    font-size: 3rem;
+    font-size: 2.5rem;
     color: var(--primary-color);
     margin-bottom: var(--sp-1-5);
+    background: var(--clr-jade-a30, var(--clr-jade-a30-fallback));
+    width: 70px;
+    height: 70px;
+    line-height: 70px;
+    border-radius: 50%;
+    display: inline-block;
 }
 
 .feature-card h3 {
     margin-bottom: var(--sp-1);
+    font-size: var(--h3-font-size);
+}
+
+/* ===== How It Works Section ===== */
+.how-it-works-section {
+    padding: 5rem 0;
+    background-color: var(--light-color);
+    text-align: center;
+}
+
+.steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--sp-2);
+    margin-top: var(--sp-3);
+}
+
+.step-card {
+    padding: var(--sp-2);
+}
+
+.step-number {
+    width: 60px;
+    height: 60px;
+    line-height: 60px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: white;
+    font-size: 1.75rem;
+    font-weight: var(--font-bold);
+    margin: 0 auto var(--sp-1-5);
+}
+
+.step-card h3 {
+    margin-bottom: var(--sp-1);
+}
+
+/* ===== Call to Action (CTA) Section ===== */
+.cta-section {
+    padding: 5rem 0;
+    text-align: center;
+    background-color: var(--clr-jade-a20, var(--clr-jade-a20-fallback));
+}
+
+.cta-section h2 {
+    font-size: var(--h1-font-size);
+    margin-bottom: var(--sp-1);
+}
+
+.cta-section p {
+    font-size: 1.15rem;
+    color: var(--secondary-color);
+    margin-bottom: var(--sp-2);
+}
+/* Style for the main call-to-action button in the hero section */
+.btn-hero {
+    background-color: white;
+    color: var(--primary-color-dark);
+    font-weight: var(--font-bold);
+}
+
+.btn-hero:hover {
+    background-color: var(--clr-jade-a30, var(--clr-jade-a30-fallback));
+    transform: translateY(-3px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
 }
