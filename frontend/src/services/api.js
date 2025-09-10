@@ -62,8 +62,12 @@ export const loginUser = (credentials) => {
   return apiRequest("/users/login", "POST", credentials, true); // Public route
 };
 
-export const registerUser = (userData) => {
-  return apiRequest("/users", "POST", userData, true); // Public route
+export const sendOtp = (email) => {
+  return apiRequest("/users/send-otp", "POST", { email }, true);
+};
+
+export const verifyAndRegister = (userData) => {
+  return apiRequest("/users/verify-register", "POST", userData, true);
 };
 
 export const getMe = () => {
