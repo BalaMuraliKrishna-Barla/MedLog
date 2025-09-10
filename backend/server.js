@@ -1,0 +1,27 @@
+const express = require('express');
+require('dotenv').config();
+const connectDB = require('./config/db');
+
+// Connect to Database
+connectDB();
+
+const app = express();
+
+// Middleware to parse JSON and urlencoded bodies
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+// Routes
+app.use('/api/users', require('./routes/userRoutes'));
+app.use('/api/profile', require('./routes/profileRoutes'));
+
+// A simple test route to check if the server is running
+app.get('/api', (req, res) => {
+    res.json({ message: 'Welcome to the MedLog API' });
+});
+
+const PORT = process.env.PORT || 5000;
+
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+});
