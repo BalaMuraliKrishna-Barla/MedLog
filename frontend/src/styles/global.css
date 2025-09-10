@@ -1,0 +1,121 @@
+/* ===== GOOGLE FONTS ===== */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+/* ===== CSS VARIABLES ===== */
+:root {
+    /* JADE COLOR PALETTE */
+    /* HDR oklab colors (for modern browsers) */
+    --clr-jade-a0: oklab(63.2% -0.134 0.047);
+    --clr-jade-a10: oklab(72.5% -0.107 0.042);
+    --clr-jade-a20: oklab(82.6% -0.068 0.04);
+    --clr-jade-a30: oklab(94% -0.03 0.011);
+    /* Fallback colors */
+    --clr-jade-a0-fallback: #00A36C;
+    --clr-jade-a10-fallback: #5FBC8B;
+    --clr-jade-a20-fallback: #A2D5AB;
+    --clr-jade-a30-fallback: #DAF2E4;
+    
+    /* Mapped Colors */
+    --primary-color: var(--clr-jade-a0, --clr-jade-a0-fallback);
+    --primary-color-dark: oklab(55% -0.13 0.04); /* A calculated darker shade */
+    --primary-color-light: var(--clr-jade-a10, --clr-jade-a10-fallback);
+    --body-color: var(--clr-jade-a30, --clr-jade-a30-fallback);
+
+    /* Other Colors */
+    --secondary-color: #6c757d;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --light-color: #f8f9fa;
+    --dark-color: #343a40;
+
+    --text-color: #333;
+    --text-color-light: #f1f1f1;
+    --container-color: #ffffff;
+
+    --gradient-primary: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-color-dark) 100%);
+    --gradient-danger: linear-gradient(135deg, #dc3545 0%, #a71d2a 100%);
+
+    /* Typography */
+    --body-font: 'Poppins', sans-serif;
+    --h1-font-size: 2.25rem;
+    --h2-font-size: 1.5rem;
+    --h3-font-size: 1.25rem;
+    --normal-font-size: 1rem;
+    --small-font-size: 0.875rem;
+
+    /* Font Weight */
+    --font-medium: 500;
+    --font-semibold: 600;
+    --font-bold: 700;
+
+    /* Margins & Paddings */
+    --sp-0-5: 0.5rem;
+    --sp-1: 1rem;
+    --sp-1-5: 1.5rem;
+    --sp-2: 2rem;
+    --sp-3: 3rem;
+
+    /* Box Shadow & Borders */
+    --box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    --border-radius: 0.5rem;
+    --border-color: #dee2e6;
+}
+
+/* ===== BASE STYLES ===== */
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: var(--body-font);
+    font-size: var(--normal-font-size);
+    background-color: var(--body-color);
+    color: var(--text-color);
+}
+
+h1,
+h2,
+h3 {
+    font-weight: var(--font-semibold);
+    color: var(--dark-color);
+}
+
+ul {
+    list-style: none;
+}
+
+a {
+    text-decoration: none;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* ===== UTILITY CLASSES ===== */
+.container {
+    max-width: 968px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 var(--sp-1-5);
+}
+
+/* ===== RESPONSIVE TYPOGRAPHY ===== */
+@media screen and (max-width: 992px) {
+    :root {
+        --h1-font-size: 1.75rem;
+        --h2-font-size: 1.25rem;
+        --h3-font-size: 1rem;
+        --normal-font-size: 0.938rem;
+        --small-font-size: 0.813rem;
+    }
+}
+

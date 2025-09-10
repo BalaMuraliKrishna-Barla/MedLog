@@ -3,17 +3,15 @@ const bcrypt = require('bcryptjs');
 const User = require('../models/userModel');
 const Profile = require('../models/profileModel');
 
-// @desc    Register a new user
-// @route   POST /api/users
-// @access  Public
+// WITH this new version
 const registerUser = async (req, res) => {
     try {
-        const { name, email, password } = req.body;
+        const { name, email, password, dateOfBirth, role } = req.body;
 
         // 1. Validation
-        if (!name || !email || !password) {
+        if (!name || !email || !password || !dateOfBirth || !role) {
             res.status(400);
-            throw new Error('Please include all fields');
+            throw new Error('Please include all fields: name, email, password, date of birth, and role.');
         }
 
         // 2. Find if user already exists
@@ -32,21 +30,24 @@ const registerUser = async (req, res) => {
             name,
             email,
             password: hashedPassword,
+            dateOfBirth,
+            role,
         });
 
-        // 5. Create an associated profile. If this fails, we must delete the user.
+        // 5. Create an associated profile.
         if (user) {
             try {
-                await Profile.create({ user: user._id }); // Link profile to user
+                // Pass the date of birth to the profile upon creation
+                await Profile.create({ user: user._id, dateOfBirth: user.dateOfBirth }); 
 
                 res.status(201).json({
                     _id: user.id,
                     name: user.name,
                     email: user.email,
+                    role: user.role, // Return the role
                     token: generateToken(user._id),
                 });
             } catch (profileError) {
-                // If profile creation fails, roll back user creation for data integrity
                 await User.findByIdAndDelete(user._id);
                 console.error(profileError);
                 res.status(500);
@@ -78,9 +79,6 @@ const generateToken = (id) => {
     });
 };
 
-// @desc    Authenticate a user
-// @route   POST /api/users/login
-// @access  Public
 const loginUser = async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -94,6 +92,7 @@ const loginUser = async (req, res) => {
                 _id: user.id,
                 name: user.name,
                 email: user.email,
+                role: user.role, // Return the role on login
                 token: generateToken(user._id),
             });
         } else {

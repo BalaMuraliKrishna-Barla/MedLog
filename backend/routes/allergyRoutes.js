@@ -1,20 +1,22 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
 const {
-  getAllergies,
-  createAllergy,
-  updateAllergy,
-  deleteAllergy,
-} = require("../controllers/allergyController");
-const { protect } = require("../middleware/authMiddleware");
+    getAllergies,
+    addAllergy,
+    updateAllergy,
+    deleteAllergy,
+} = require('../controllers/allergyController');
+const { protect } = require('../middleware/authMiddleware');
 
 // Protect all routes
 router.use(protect);
 
-// Routes for getting all and creating a new allergy
-router.route("/").get(getAllergies).post(createAllergy);
+// GET route is now specific to avoid conflicts
+router.route('/user/:userId').get(getAllergies);
 
-// Routes for updating and deleting a specific allergy
-router.route("/:id").put(updateAllergy).delete(deleteAllergy);
+// POST route is for the current user to create their own record
+router.route('/').post(addAllergy);
 
+// Routes for updating/deleting a SPECIFIC record by its ID
+router.route('/:id').put(updateAllergy).delete(deleteAllergy);
 module.exports = router;

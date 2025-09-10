@@ -1,36 +1,39 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const vitalSchema = new mongoose.Schema(
-  {
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      required: true,
-      ref: "User",
+    {
+        user: {
+            type: mongoose.Schema.Types.ObjectId,
+            required: true,
+            ref: 'User',
+        },
+        recordDate: {
+            type: Date,
+            required: [true, 'Please add the date of the reading'],
+            default: Date.now,
+        },
+        bloodPressure: {
+            type: String, // e.g., "120/80"
+        },
+        heartRate: {
+            type: Number, // Beats per minute
+        },
+        temperature: {
+            type: Number, // e.g., 37.0 (Celsius) or 98.6 (Fahrenheit)
+        },
+        bloodSugar: {
+            type: Number, // e.g., 90 (mg/dL)
+        },
+        weight: {
+            type: Number, // Kilograms or Pounds
+        },
+        notes: {
+            type: String,
+        },
     },
-    recordDate: {
-      type: Date,
-      required: true,
-      default: Date.now,
-    },
-    bloodPressure: {
-      type: String,
-    },
-    heartRate: {
-      type: Number, // Beats per minute
-    },
-    temperature: {
-      type: Number, // In Celsius or Fahrenheit
-    },
-    bloodSugar: {
-      type: String,
-    },
-    weight: {
-      type: Number, // In kg or lbs
-    },
-  },
-  {
-    timestamps: true,
-  }
+    {
+        timestamps: true,
+    }
 );
 
-module.exports = mongoose.model("Vital", vitalSchema);
+module.exports = mongoose.model('Vital', vitalSchema);

@@ -39,7 +39,11 @@ const profileSchema = new mongoose.Schema(
             clinic: { type: String },
             phoneNumber: { type: String },
         },
-        emergencyContacts: [emergencyContactSchema], // This defines an array of emergency contacts
+        emergencyContacts: [emergencyContactSchema],
+        
+        medicationReminderLastSent: {
+            type: Date,
+        },
     },
     {
         timestamps: true,

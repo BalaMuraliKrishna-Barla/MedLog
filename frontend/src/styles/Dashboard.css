@@ -1,0 +1,32 @@
+.dashboard-container {
+    padding-top: var(--sp-2);
+    padding-bottom: var(--sp-2);
+}
+
+.dashboard-title {
+    font-size: var(--h1-font-size);
+    margin-bottom: var(--sp-2);
+}
+
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--sp-2);
+}
+
+/* For larger screens, create a two-column layout */
+@media screen and (min-width: 768px) {
+    .dashboard-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+
+/* ADD THIS to the end of frontend/src/styles/Dashboard.css */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--sp-2);
+}
+

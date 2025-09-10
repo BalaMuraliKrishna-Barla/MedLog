@@ -1,0 +1,35 @@
+/* REPLACE the entire frontend/src/pages/AppointmentsPage.css file */
+
+.appointments-list {
+    margin-bottom: var(--sp-2);
+}
+
+.appointments-list:last-child {
+    margin-bottom: 0;
+}
+
+.list-subtitle {
+    font-size: var(--h3-font-size);
+    margin-bottom: var(--sp-1);
+    color: var(--primary-color);
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--body-color);
+}
+
+/* We can now reuse the .record-item styles from RecordList.css */
+/* This makes our styling more consistent */
+.appointment-item.record-item {
+    transition: background-color 0.2s;
+}
+
+.appointment-item.record-item:hover {
+    background-color: var(--body-color);
+}
+
+.appointment-details p {
+    margin-bottom: 0.25rem;
+}
+
+.appointment-details p:last-child {
+    margin-bottom: 0;
+}

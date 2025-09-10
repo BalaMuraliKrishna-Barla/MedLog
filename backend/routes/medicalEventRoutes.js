@@ -1,15 +1,22 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
 const {
-  getMedicalEvents,
-  createMedicalEvent,
-  updateMedicalEvent,
-  deleteMedicalEvent,
-} = require("../controllers/medicalEventController");
-const { protect } = require("../middleware/authMiddleware");
+    getMedicalEvents,
+    addMedicalEvent,
+    updateMedicalEvent,
+    deleteMedicalEvent,
+} = require('../controllers/medicalEventController');
+const { protect } = require('../middleware/authMiddleware');
 
 router.use(protect);
-router.route("/").get(getMedicalEvents).post(createMedicalEvent);
-router.route("/:id").put(updateMedicalEvent).delete(deleteMedicalEvent);
+
+// GET route is now specific to avoid conflicts
+router.route('/user/:userId').get(getMedicalEvents);
+
+// POST route is for the current user to create their own record
+router.route('/').post(addMedicalEvent);
+
+// Routes for updating/deleting a SPECIFIC record by its ID
+router.route('/:id').put(updateMedicalEvent).delete(deleteMedicalEvent);
 
 module.exports = router;

@@ -1,0 +1,161 @@
+/* REPLACE the entire frontend/src/styles/Auth.css file */
+
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 4.5rem); /* Full height minus navbar */
+    padding: var(--sp-2);
+    background: linear-gradient(135deg, var(--body-color) 0%, var(--clr-jade-a20, var(--clr-jade-a20-fallback)) 100%);
+}
+
+.auth-card {
+    background-color: var(--container-color);
+    /* --- CORRECTION: Increased padding for better spacing --- */
+    padding: 2.5rem 3rem;
+    border-radius: var(--border-radius);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    /* --- CORRECTION: Slightly increased max-width for more room --- */
+    max-width: 480px;
+    text-align: center;
+    border-top: 4px solid var(--primary-color);
+}
+
+.auth-title {
+    font-size: var(--h2-font-size);
+    margin-bottom: var(--sp-0-5);
+}
+
+.auth-subtitle {
+    color: var(--secondary-color);
+    margin-bottom: var(--sp-2);
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-1-5);
+}
+
+.input-group {
+    text-align: left;
+    position: relative; /* For icon positioning */
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: var(--sp-0-5);
+    font-weight: var(--font-medium);
+}
+
+/* Style for the red asterisk */
+.input-group label .required-star {
+    color: var(--danger-color);
+    margin-left: 4px;
+}
+
+.input-group input,
+.input-group select {
+    width: 100%;
+    padding: 0.85rem 1rem 0.85rem 3rem; /* Add padding for the icon */
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: var(--normal-font-size);
+    font-family: var(--body-font);
+    transition: all 0.2s ease-in-out;
+}
+
+.input-group input:focus,
+.input-group select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--clr-jade-a30, var(--clr-jade-a30-fallback));
+}
+
+/* Icon styling */
+.input-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(25%);
+    color: var(--secondary-color);
+    transition: color 0.2s ease-in-out;
+}
+
+.input-group input:focus ~ .input-icon,
+.input-group select:focus ~ .input-icon {
+    color: var(--primary-color);
+}
+
+.auth-footer {
+    margin-top: var(--sp-1-5);
+    font-size: var(--small-font-size);
+}
+
+.auth-footer a {
+    color: var(--primary-color);
+    font-weight: var(--font-medium);
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
+
+/* General error message box (for API errors) */
+.error-message {
+    background-color: rgba(220, 53, 69, 0.1);
+    color: var(--danger-color);
+    padding: var(--sp-1);
+    border-radius: var(--border-radius);
+    border: 1px solid rgba(220, 53, 69, 0.2);
+    margin-bottom: var(--sp-1-5);
+    text-align: center;
+}
+
+/* Specific field-level error text */
+.error-text {
+    color: var(--danger-color);
+    font-size: var(--small-font-size);
+    margin-top: 0.25rem;
+    display: block;
+}
+
+/* Mark invalid fields */
+.input-group input.invalid {
+    border-color: var(--danger-color);
+}
+
+.input-group input.invalid:focus {
+     box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.15);
+}
+
+.input-group select,
+.input-group textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: var(--normal-font-size);
+    font-family: var(--body-font);
+    background-color: white;
+}
+
+.input-group textarea {
+    min-height: 80px;
+    resize: vertical;
+}
+
+.checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 0.5rem 0;
+}
+
+.checkbox-group label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}

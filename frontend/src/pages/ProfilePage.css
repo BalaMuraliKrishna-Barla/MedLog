@@ -1,0 +1,11 @@
+/* REPLACE the entire file with this new version */
+.profile-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-1-5);
+}
+
+.profile-form .input-group input[disabled] {
+    background-color: var(--light-color);
+    cursor: not-allowed;
+}
