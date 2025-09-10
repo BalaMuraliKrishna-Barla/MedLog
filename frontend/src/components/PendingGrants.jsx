@@ -1,16 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import * as api from '../services/api';
 import Card from './Card';
+import Spinner from './Spinner';
+import toast from 'react-hot-toast';
 
 const PendingGrants = ({ onGrantUpdate }) => {
     const [invites, setInvites] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
 
     const fetchInvites = async () => {
         setLoading(true);
-        const data = await api.getPendingGrants();
-        setInvites(data);
-        setLoading(false);
+        setError('');
+        try {
+            const data = await api.getPendingGrants();
+            setInvites(data);
+        } catch (err) {
+            setError('Could not load pending invitations.');
+            toast.error(err.message || 'Could not load invitations.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     useEffect(() => {
@@ -18,15 +28,24 @@ const PendingGrants = ({ onGrantUpdate }) => {
     }, []);
 
     const handleAccept = async (grantId) => {
-        await api.acceptGrant(grantId);
-        onGrantUpdate(); // This will trigger a refresh on the parent
+        const toastId = toast.loading('Accepting invitation...');
+        try {
+            await api.acceptGrant(grantId);
+            toast.success('Invitation accepted! Patient added to your list.', { id: toastId });
+            onGrantUpdate(); // This will trigger a refresh on the parent
+            fetchInvites(); // Re-fetch invites to update this component's list
+        } catch (err) {
+            toast.error(err.message || 'Failed to accept invitation.', { id: toastId });
+        }
     };
 
-    if (loading) return <p>Loading invitations...</p>;
-    if (invites.length === 0) return null; // Don't show the card if there are no invites
-
-    return (
-        <Card title="Pending Invitations">
+    const renderContent = () => {
+        if (loading) return <Spinner />;
+        if (error) return <p className="error-message">{error}</p>;
+        if (invites.length === 0) {
+            return <p className="no-records">You have no pending invitations from patients.</p>;
+        }
+        return (
             <div className="grant-list">
                 {invites.map(invite => (
                     <div key={invite._id} className="grant-item">
@@ -38,6 +57,12 @@ const PendingGrants = ({ onGrantUpdate }) => {
                     </div>
                 ))}
             </div>
+        );
+    };
+
+    return (
+        <Card title="Pending Invitations">
+            {renderContent()}
         </Card>
     );
 };

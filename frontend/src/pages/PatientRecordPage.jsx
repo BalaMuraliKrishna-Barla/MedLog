@@ -2,48 +2,86 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import * as api from '../services/api';
 import Spinner from '../components/Spinner';
-// We will reuse the section components but pass a `readOnly` prop
-// This requires a small modification to the section components later
+import AllergySection from '../components/AllergySection';
+import MedicationSection from '../components/MedicationSection';
+import VaccinationSection from '../components/VaccinationSection';
+import VitalSection from '../components/VitalSection';
+import MedicalEventSection from '../components/MedicalEventSection';
+import CustomSection from '../components/CustomSection'; // Assuming it can be read-only too
 
 const PatientRecordPage = () => {
     const { userId } = useParams();
-    const [patientData, setPatientData] = useState(null);
+    const [patientName, setPatientName] = useState('');
+    const [records, setRecords] = useState({
+        allergies: [], medications: [], vaccinations: [], vitals: [], medicalEvents: [], customSections: []
+    });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
     useEffect(() => {
         const fetchPatientData = async () => {
+            setLoading(true);
+            setError('');
             try {
-                // Fetch all data for the specific patient
-                const [allergies, medications /*, other data types */] = await Promise.all([
+                // Fetch all data in parallel
+                const [
+                    userData,
+                    allergies,
+                    medications,
+                    vaccinations,
+                    vitals,
+                    medicalEvents,
+                    customSections
+                ] = await Promise.all([
+                    api.getUserById(userId),
                     api.getAllergies(userId),
                     api.getMedications(userId),
-                    // Fetch other records here...
+                    api.getVaccinations(userId),
+                    api.getVitals(userId),
+                    api.getMedicalEvents(userId),
+                    api.getCustomSections(userId)
                 ]);
-                // We need the patient's name, which isn't in these records.
-                // For a production app, you'd add an endpoint to get basic user info.
-                // For now, we'll just show the ID.
-                setPatientData({ allergies, medications, name: `Patient Records` });
+
+                setPatientName(userData.name);
+                setRecords({
+                    allergies,
+                    medications,
+                    vaccinations,
+                    vitals,
+                    medicalEvents,
+                    customSections
+                });
+
             } catch (err) {
                 setError(err.message || 'Could not fetch patient records.');
             } finally {
                 setLoading(false);
             }
         };
-        fetchPatientData();
+
+        if (userId) {
+            fetchPatientData();
+        }
     }, [userId]);
 
-    if (loading) return <Spinner />;
+    if (loading) return <div className="container"><Spinner /></div>;
     if (error) return <div className="container error-message">{error}</div>;
 
     return (
         <div className="dashboard-container container">
-            <h1 className="dashboard-title">{patientData.name}</h1>
-            <p style={{textAlign: "center", marginBottom: "2rem"}}>You are viewing these records in read-only mode.</p>
+            <h1 className="dashboard-title">Viewing Health Records for: {patientName}</h1>
+            <p style={{ textAlign: "center", marginBottom: "2rem", color: 'var(--secondary-color)' }}>
+                This is a read-only view. No changes can be made.
+            </p>
             <div className="dashboard-grid">
-                {/* Here we would render read-only versions of our sections */}
-                {/* For now, let's just display the raw data */}
-                <pre>{JSON.stringify(patientData, null, 2)}</pre>
+                <AllergySection allergies={records.allergies} readOnly={true} />
+                <MedicationSection medications={records.medications} readOnly={true} />
+                <VaccinationSection vaccinations={records.vaccinations} readOnly={true} />
+                <VitalSection vitals={records.vitals} readOnly={true} />
+                <MedicalEventSection medicalEvents={records.medicalEvents} readOnly={true} />
+                {records.customSections.map(section => (
+                    <CustomSection key={section._id} section={section} readOnly={true} />
+                ))}
             </div>
         </div>
     );

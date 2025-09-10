@@ -27,8 +27,8 @@ app.use('/api/vitals', require('./routes/vitalRoutes'));
 app.use('/api/medicalevents', require('./routes/medicalEventRoutes'));
 app.use('/api/export', require('./routes/exportRoutes'));
 app.use('/api/appointments', require('./routes/appointmentRoutes'));
-
-app.use("/api/access", require("./routes/accessRoutes"));
+app.use('/api/customsections', require('./routes/customSectionRoutes'));
+app.use('/api/access', require('./routes/accessRoutes'));
 
 
 // A simple test route to check if the server is running
@@ -39,5 +39,5 @@ app.get('/api', (req, res) => {
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
+    console.log(`Server is running on port ${PORT}✅`);
 });

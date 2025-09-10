@@ -9,16 +9,27 @@ const userSchema = mongoose.Schema(
         email: {
             type: String,
             required: [true, 'Please add an email'],
-            unique: true, // Each email must be unique
+            unique: true,
         },
         password: {
             type: String,
             required: [true, 'Please add a password'],
         },
+        dateOfBirth: {
+            type: Date,
+            required: [true, 'Please add your date of birth'],
+        },
+        role: {
+            type: String,
+            required: [true, 'Please specify a role'],
+            enum: ['Patient', 'Doctor'],
+            default: 'Patient',
+        },
     },
     {
-        timestamps: true, // Automatically adds createdAt and updatedAt fields
+        timestamps: true,
     }
 );
+
 
 module.exports = mongoose.model('User', userSchema);

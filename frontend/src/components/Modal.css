@@ -7,7 +7,10 @@
     background-color: rgba(0, 0, 0, 0.6);
     display: flex;
     justify-content: center;
-    align-items: center;
+    /* We remove align-items: center to prevent the modal from being cut off */
+    /* Instead, we add padding and make the overlay scrollable */
+    padding: var(--sp-3) 0;
+    overflow-y: auto;
     z-index: 1000;
 }
 
@@ -18,8 +21,11 @@
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
     width: 90%;
     max-width: 500px;
-    max-height: 90vh;
-    overflow-y: auto;
+    /* We set a max-height but also allow the modal to shrink if needed */
+    max-height: 95vh;
+    /* We add margin-bottom: auto to help with positioning in the flex container */
+    margin-bottom: auto;
+    margin-top: auto;
 }
 
 .modal-header {

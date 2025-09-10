@@ -34,23 +34,22 @@ const getAllergies = async (req, res) => {
     }
 };
 
-// @desc    Add a new allergy
-// @route   POST /api/allergies
-// @access  Private
 const addAllergy = async (req, res) => {
     try {
-        const { allergen, reaction, severity, notes } = req.body;
+        const { allergen, allergyType, reaction, severity, firstNoted, notes } = req.body;
 
-        if (!allergen || !severity) {
+        if (!allergen || !severity || !allergyType) {
             res.status(400);
-            throw new Error('Allergen and severity are required fields.');
+            throw new Error('Allergen, severity, and allergy type are required fields.');
         }
 
         const newAllergy = await Allergy.create({
             user: req.user.id,
             allergen,
+            allergyType,
             reaction,
             severity,
+            firstNoted,
             notes,
         });
 

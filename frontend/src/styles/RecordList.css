@@ -64,3 +64,28 @@
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
 }   
+
+
+/* ADD THIS to the end of frontend/src/styles/RecordList.css */
+.btn-delete-section {
+    background: none;
+    border: none;
+    color: var(--secondary-color);
+    cursor: pointer;
+    font-size: 1rem;
+    opacity: 0.5;
+    transition: opacity 0.2s;
+}
+
+.btn-delete-section:hover {
+    opacity: 1;
+    color: var(--danger-color);
+}
+
+.record-description {
+    font-size: var(--small-font-size);
+    color: var(--secondary-color);
+    margin-top: 0.5rem;
+    padding-left: 0.5rem;
+    border-left: 2px solid var(--border-color);
+}

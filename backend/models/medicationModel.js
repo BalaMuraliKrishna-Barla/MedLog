@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+// WITH this new version
 const medicationSchema = new mongoose.Schema(
     {
         user: {
@@ -15,24 +16,38 @@ const medicationSchema = new mongoose.Schema(
             type: String,
             required: [true, 'Please add the dosage'],
         },
+        // Frequency is now a structured object
         frequency: {
+            timesPerDay: {
+                type: Number,
+                required: true,
+            },
+            // Stores specific times like ['Morning', 'Evening']
+            timings: [
+                {
+                    type: String,
+                    enum: ['Morning', 'Afternoon', 'Evening', 'Night'],
+                },
+            ],
+        },
+        instructions: {
             type: String,
-            required: [true, 'Please add the frequency'],
+            enum: ['Any Time', 'Before Food', 'After Food'],
+            default: 'Any Time',
         },
         reason: {
-            type: String, // e.g., "High Blood Pressure"
+            type: String, 
         },
         startDate: {
             type: Date,
             default: Date.now,
         },
         endDate: {
-            type: Date, // Can be null if the medication is ongoing
+            type: Date,
         },
     },
     {
         timestamps: true,
     }
 );
-
 module.exports = mongoose.model('Medication', medicationSchema);

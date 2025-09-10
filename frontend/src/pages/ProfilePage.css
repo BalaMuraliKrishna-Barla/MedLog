@@ -1,21 +1,11 @@
-.profile-info {
-    margin-bottom: var(--sp-2);
-}
-
-.profile-info p {
-    margin-bottom: var(--sp-0-5);
-}
-
-.export-section h3 {
-    margin-bottom: var(--sp-0-5);
-}
-
-.export-section p {
-    color: var(--secondary-color);
-    margin-bottom: var(--sp-1-5);
-}
-
-.export-buttons {
+/* REPLACE the entire file with this new version */
+.profile-form {
     display: flex;
-    gap: var(--sp-1);
+    flex-direction: column;
+    gap: var(--sp-1-5);
+}
+
+.profile-form .input-group input[disabled] {
+    background-color: var(--light-color);
+    cursor: not-allowed;
 }

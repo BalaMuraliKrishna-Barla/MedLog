@@ -1,68 +1,75 @@
-import React, { useState } from 'react';
+// REPLACE the entire file with this new version
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import * as api from '../services/api';
+import toast from 'react-hot-toast';
 import Card from '../components/Card';
+import Spinner from '../components/Spinner';
 import './ProfilePage.css';
 
 const ProfilePage = () => {
-  const { user } = useAuth();
-  const [loadingPdf, setLoadingPdf] = useState(false);
-  const [loadingJson, setLoadingJson] = useState(false);
+  const { user, login } = useAuth(); // We need login to update the context
+  const [formData, setFormData] = useState({ name: '', dateOfBirth: '' });
+  const [loading, setLoading] = useState(true);
 
-  const handleDownloadPdf = async () => {
-    setLoadingPdf(true);
-    try {
-      const blob = await api.exportPdf();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `MedLog_Report_${user.name}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      alert('Failed to download PDF report.');
-    } finally {
-      setLoadingPdf(false);
+    useEffect(() => {
+    if (user) {
+      setFormData({
+        name: user.name || '', // Fallback to empty string
+        dateOfBirth: user.dateOfBirth ? new Date(user.dateOfBirth).toISOString().split('T')[0] : '',
+      });
+      setLoading(false);
     }
+  }, [user]);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
   
-  const handleDownloadJson = async () => {
-    setLoadingJson(true);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const toastId = toast.loading('Updating profile...');
     try {
-      const data = await api.exportJson();
-      const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(data, null, 2))}`;
-      const a = document.createElement('a');
-      a.href = jsonString;
-      a.download = `MedLog_Backup_${user.name}.json`;
-      a.click();
-    } catch (error) {
-      alert('Failed to download JSON backup.');
-    } finally {
-      setLoadingJson(false);
+        // The API will return the updated Profile document, which includes the user object
+        const updatedProfile = await api.updateProfile(formData);
+        
+        // The user object is nested inside the updated profile data
+        const updatedUser = updatedProfile.user;
+
+        // We use the login function from AuthContext to update the user state globally.
+        // We pass the new user object and the existing token.
+        login(updatedUser, localStorage.getItem('userToken'));
+        
+        toast.success('Profile updated successfully!', { id: toastId });
+    } catch (err) {
+        toast.error(err.message || 'Failed to update profile.', { id: toastId });
     }
-  };
+}
+
+  if (loading) return <Spinner />;
 
   return (
     <div className="container">
-      <Card title="Profile & Settings">
-        <div className="profile-info">
-          <p><strong>Name:</strong> {user?.name}</p>
-          <p><strong>Email:</strong> {user?.email}</p>
-        </div>
-        <div className="export-section">
-          <h3>Data Portability</h3>
-          <p>Download a copy of your health records.</p>
-          <div className="export-buttons">
-            <button className="btn btn-secondary" onClick={handleDownloadPdf} disabled={loadingPdf}>
-              {loadingPdf ? 'Generating...' : 'Download PDF Summary'}
-            </button>
-            <button className="btn btn-secondary" onClick={handleDownloadJson} disabled={loadingJson}>
-              {loadingJson ? 'Generating...' : 'Export All Data (JSON)'}
-            </button>
-          </div>
-        </div>
+      <Card title="My Profile">
+        <form className="profile-form" onSubmit={handleSubmit}>
+            <div className="input-group">
+                <label>Full Name</label>
+                <input name="name" value={formData.name} onChange={handleChange} />
+            </div>
+             <div className="input-group">
+                <label>Date of Birth</label>
+                <input name="dateOfBirth" type="date" value={formData.dateOfBirth} onChange={handleChange} />
+            </div>
+             <div className="input-group">
+                <label>Email</label>
+                <input value={user?.email} disabled />
+            </div>
+            <div className="input-group">
+                <label>Role</label>
+                <input value={user?.role} disabled />
+            </div>
+            <button type="submit" className="btn btn-primary">Save Changes</button>
+        </form>
       </Card>
     </div>
   );

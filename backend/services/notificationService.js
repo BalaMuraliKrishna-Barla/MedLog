@@ -1,128 +1,100 @@
-const cron = require('node-cron');
-const nodemailer = require('nodemailer');
-const Appointment = require('../models/appointmentModel');
-const Medication = require('../models/medicationModel');
-const Profile = require('../models/profileModel'); // Import Profile model
+// REPLACE the entire backend/services/notificationService.js file
+
+const cron = require("node-cron");
+const nodemailer = require("nodemailer");
+const Appointment = require("../models/appointmentModel");
+const Medication = require("../models/medicationModel");
+const User = require("../models/userModel"); // <-- THE CRITICAL MISSING IMPORT
 
 // 1. Configure the email transporter
 const transporter = nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-    },
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
 });
 
-// 2. Email sending function for Appointments
+// 2. Email sending function for Appointments with new template
 const sendAppointmentReminderEmail = (user, appointment) => {
   const appointmentDate = new Date(
     appointment.appointmentDateTime
   ).toLocaleString();
 
   const mailOptions = {
-    from: process.env.EMAIL_USER,
+    from: `MedLog <${process.env.EMAIL_USER}>`,
     to: user.email,
-    subject: `📅 Appointment Reminder: ${appointmentDate}`,
+    subject: `📅 Appointment Reminder: ${appointment.purpose} on ${new Date(
+      appointment.appointmentDateTime
+    ).toLocaleDateString()}`,
     html: `
         <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f2f5fa; padding: 30px;">
             <div style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
-                
-                <!-- Header -->
                 <div style="background-color: #1976D2; color: white; padding: 25px 30px; text-align: center;">
                     <h1 style="margin: 0; font-size: 28px;">👨‍⚕️ Appointment Reminder</h1>
                     <p style="margin: 8px 0 0;">We’re here to keep your health on track</p>
                 </div>
-
-                <!-- Body -->
                 <div style="padding: 30px;">
                     <p style="font-size: 16px; color: #333;">Hi <strong>${
                       user.name
                     }</strong>, 👋</p>
                     <p style="font-size: 16px; color: #333;">Just a quick reminder about your upcoming appointment:</p>
-
                     <table style="width: 100%; margin-top: 20px; border-collapse: collapse; background-color: #fafafa; border-radius: 8px; overflow: hidden;">
-                        <tr style="border-bottom: 1px solid #e0e0e0;">
-                            <td style="padding: 12px 15px;">👨‍⚕️ <strong>Doctor</strong></td>
-                            <td style="padding: 12px 15px;">${
-                              appointment.doctorName
-                            }</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid #e0e0e0;">
-                            <td style="padding: 12px 15px;">📝 <strong>Purpose</strong></td>
-                            <td style="padding: 12px 15px;">${
-                              appointment.purpose
-                            }</td>
-                        </tr>
-                        <tr style="border-bottom: 1px solid #e0e0e0;">
-                            <td style="padding: 12px 15px;">📆 <strong>Date & Time</strong></td>
-                            <td style="padding: 12px 15px;">${appointmentDate}</td>
-                        </tr>
-                        <tr>
-                            <td style="padding: 12px 15px;">📍 <strong>Location</strong></td>
-                            <td style="padding: 12px 15px;">${
-                              appointment.location || "N/A"
-                            }</td>
-                        </tr>
+                        <tr style="border-bottom: 1px solid #e0e0e0;"><td style="padding: 12px 15px;">👨‍⚕️ <strong>Doctor</strong></td><td style="padding: 12px 15px;">${
+                          appointment.doctorName
+                        }</td></tr>
+                        <tr style="border-bottom: 1px solid #e0e0e0;"><td style="padding: 12px 15px;">📝 <strong>Purpose</strong></td><td style="padding: 12px 15px;">${
+                          appointment.purpose
+                        }</td></tr>
+                        <tr style="border-bottom: 1px solid #e0e0e0;"><td style="padding: 12px 15px;">📆 <strong>Date & Time</strong></td><td style="padding: 12px 15px;">${appointmentDate}</td></tr>
+                        <tr><td style="padding: 12px 15px;">📍 <strong>Location</strong></td><td style="padding: 12px 15px;">${
+                          appointment.location || "N/A"
+                        }</td></tr>
                     </table>
-
-                    <p style="margin-top: 25px; font-size: 15px; color: #555;">
-                        🕑 Please arrive at least 10 minutes early and bring any relevant medical documents.
-                    </p>
-
-                    <div style="text-align: center; margin-top: 35px;">
-                        <a href="#" style="background-color: #1976D2; color: white; padding: 12px 25px; text-decoration: none; border-radius: 6px; font-size: 16px;">
-                            📍 View Appointment Details
-                        </a>
-                    </div>
+                    <p style="margin-top: 25px; font-size: 15px; color: #555;">🕑 Please arrive at least 10 minutes early and bring any relevant medical documents.</p>
                 </div>
-
-                <!-- Footer -->
                 <div style="background-color: #f0f0f0; text-align: center; padding: 20px; font-size: 13px; color: #777;">
                     <p style="margin: 0;">💙 Thank you for choosing <strong>MedLog</strong> — Your Health, Simplified.</p>
                     <p style="margin: 5px 0 0;">Need help? <a href="mailto:support@medlog.com" style="color: #1976D2;">Contact Support</a></p>
                 </div>
             </div>
-        </div>
-        `,
+        </div>`,
   };
 
   console.log(
     `[EMAIL TRIGGERED] Attempting to send APPOINTMENT reminder to ${user.email} for Dr. ${appointment.doctorName}.`
   );
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
+  transporter.sendMail(mailOptions, (error) => {
+    if (error)
       console.error(`Error sending appointment email to ${user.email}:`, error);
-    } else {
+    else
       console.log(
         `Appointment reminder email sent successfully to ${user.email}`
       );
-    }
   });
 };
 
-
-// 3. Email sending function for Medications
+// 3. Email sending function for Medications with new template
 const sendMedicationReminderEmail = (user, medications) => {
   const medicationListHtml = medications
-    .map(
+    .ymap(
       (med) => `
         <tr>
-            <td style="padding: 10px 15px; border-bottom: 1px solid #eee;">
-                💊 <strong>${med.medicationName}</strong>
-            </td>
-            <td style="padding: 10px 15px; border-bottom: 1px solid #eee;">
-                🧪 ${med.dosage}
-            </td>
-            <td style="padding: 10px 15px; border-bottom: 1px solid #eee;">
-                ⏰ ${med.frequency}
-            </td>
-        </tr>
-    `
+            <td style="padding: 10px 15px; border-bottom: 1px solid #eee;">💊 <strong>${
+              med.medicationName
+            }</strong></td>
+            <td style="padding: 10px 15px; border-bottom: 1px solid #eee;">🧪 ${
+              med.dosage
+            }</td>
+            <td style="padding: 10px 15px; border-bottom: 1px solid #eee;">⏰ ${med.frequency.timings.join(
+              ", "
+            )} (${med.instructions})</td>
+        </tr>`
     )
     .join("");
 
   const mailOptions = {
-    from: process.env.EMAIL_USER,
+    from: `MedLog <${process.env.EMAIL_USER}>`,
     to: user.email,
     subject: "💊 Your Daily Medication Reminder | MedLog",
     html: `
@@ -132,130 +104,115 @@ const sendMedicationReminderEmail = (user, medications) => {
                     <h1 style="margin: 0;">🌿 MedLog</h1>
                     <p style="margin: 5px 0 0;">Your Daily Wellness Partner</p>
                 </div>
-
                 <div style="padding: 30px;">
                     <p style="font-size: 16px; color: #333;">Hello <strong>${user.name}</strong>, 👋</p>
                     <p style="font-size: 16px; color: #333;">This is your friendly reminder to take the following medications today:</p>
-
                     <table style="width: 100%; border-collapse: collapse; margin-top: 20px; background-color: #fafafa;">
                         <thead>
                             <tr style="background-color: #e8f5e9; text-align: left;">
                                 <th style="padding: 12px 15px;">Medication</th>
                                 <th style="padding: 12px 15px;">Dosage</th>
-                                <th style="padding: 12px 15px;">Frequency</th>
+                                <th style="padding: 12px 15px;">Schedule</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            ${medicationListHtml}
-                        </tbody>
+                        <tbody>${medicationListHtml}</tbody>
                     </table>
-
-                    <p style="margin-top: 30px; font-size: 15px; color: #555;">
-                        ✅ Please take your medications as prescribed. If you have any questions, always consult your healthcare provider.
-                    </p>
-
-                    <div style="text-align: center; margin-top: 40px;">
-                        <a href="#" style="background-color: #4CAF50; color: white; padding: 12px 25px; text-decoration: none; border-radius: 5px; font-size: 16px;">
-                            📅 View My Schedule
-                        </a>
-                    </div>
+                    <p style="margin-top: 30px; font-size: 15px; color: #555;">✅ Please take your medications as prescribed. If you have any questions, always consult your healthcare provider.</p>
                 </div>
-
                 <div style="background-color: #f1f1f1; text-align: center; padding: 15px; font-size: 13px; color: #777;">
                     <p style="margin: 0;">💡 Stay consistent. Stay healthy. – <strong>MedLog</strong></p>
                     <p style="margin: 5px 0 0;">Need help? <a href="mailto:support@medlog.com" style="color: #4CAF50;">Contact support</a></p>
                 </div>
             </div>
-        </div>
-        `,
+        </div>`,
   };
 
   console.log(
     `[EMAIL TRIGGERED] Attempting to send MEDICATION reminder to ${user.email}.`
   );
-  transporter.sendMail(mailOptions, (error, info) => {
-    if (error) {
+  transporter.sendMail(mailOptions, (error) => {
+    if (error)
       console.error(`Error sending medication email to ${user.email}:`, error);
-    } else {
+    else
       console.log(
         `Medication reminder email sent successfully to ${user.email}`
       );
-    }
   });
 };
 
-// 4. THE FINAL CRON JOB LOGIC
 const startScheduledJobs = () => {
-    // Using 30-second interval for testing. Production should be '0 8 * * *'
-    cron.schedule('*/30 * * * * *', async () => {
-        const now = new Date();
-        const startOfToday = new Date();
-        startOfToday.setHours(0, 0, 0, 0);
+  const cronSchedule = "0 8 * * * *";
 
-        console.log(`\n--- Running Scheduled Jobs at ${now.toLocaleTimeString()} ---`);
+  cron.schedule(cronSchedule, async () => {
+    const now = new Date();
+    const startOfToday = new Date();
+    startOfToday.setHours(0, 0, 0, 0);
+    console.log(
+      `\n--- Running Scheduled Jobs at ${now.toLocaleTimeString()} ---`
+    );
 
-        // --- Task 1: Check for Appointment Reminders (Stateful) ---
-        try {
-            const startOfTomorrow = new Date();
-            startOfTomorrow.setDate(startOfTomorrow.getDate() + 1);
-            startOfTomorrow.setHours(0, 0, 0, 0);
-            const endOfTomorrow = new Date(startOfTomorrow);
-            endOfTomorrow.setDate(endOfTomorrow.getDate() + 1);
-
-            const upcomingAppointments = await Appointment.find({
-                appointmentDateTime: { $gte: startOfTomorrow, $lt: endOfTomorrow },
-                reminderSent: false,
-            }).populate('user', 'name email');
-
-            if (upcomingAppointments.length > 0) {
-                upcomingAppointments.forEach(async (app) => {
-                    if (app.user) {
-                        sendAppointmentReminderEmail(app.user, app);
-                        await Appointment.findByIdAndUpdate(app._id, { reminderSent: true });
-                    }
-                });
-            }
-        } catch (error) {
-            console.error('Error checking for appointment reminders:', error);
-        }
-
-        // --- Task 2: Check for Daily Medication Reminders (Stateful) ---
-        try {
-            const userIdsWithActiveMeds = await Medication.distinct('user', {
-                startDate: { $lte: now },
-                $or: [{ endDate: null }, { endDate: { $gte: now } }],
+    // --- Task 1: Appointment Reminders ---
+    try {
+      const startOfTomorrow = new Date();
+      startOfTomorrow.setDate(startOfTomorrow.getDate() + 1);
+      startOfTomorrow.setHours(0, 0, 0, 0);
+      const endOfTomorrow = new Date(startOfTomorrow);
+      endOfTomorrow.setDate(endOfTomorrow.getDate() + 1);
+      const upcomingAppointments = await Appointment.find({
+        appointmentDateTime: { $gte: startOfTomorrow, $lt: endOfTomorrow },
+        reminderSent: false,
+      }).populate("user", "name email");
+      if (upcomingAppointments.length > 0) {
+        console.log(
+          `[Appointments] Found ${upcomingAppointments.length} upcoming appointments.`
+        );
+        for (const app of upcomingAppointments) {
+          if (app.user) {
+            sendAppointmentReminderEmail(app.user, app);
+            await Appointment.findByIdAndUpdate(app._id, {
+              reminderSent: true,
             });
-
-            if (userIdsWithActiveMeds.length > 0) {
-                const profilesToRemind = await Profile.find({
-                    user: { $in: userIdsWithActiveMeds },
-                    $or: [
-                        { medicationReminderLastSent: null },
-                        { medicationReminderLastSent: { $lt: startOfToday } },
-                    ],
-                }).populate('user', 'name email');
-
-                if (profilesToRemind.length > 0) {
-                    console.log(`Found ${profilesToRemind.length} user(s) needing medication reminders.`);
-                    for (const profile of profilesToRemind) {
-                        const user = profile.user;
-                        if (!user) continue;
-
-                        const userMeds = await Medication.find({ user: user._id, startDate: { $lte: now }, $or: [{ endDate: null }, { endDate: { $gte: now } }] });
-                        
-                        if (userMeds.length > 0) {
-                            sendMedicationReminderEmail(user, userMeds);
-                            await Profile.updateOne({ _id: profile._id }, { medicationReminderLastSent: new Date() });
-                        }
-                    }
-                }
-            }
-        } catch (error) {
-            console.error('Error checking for medication reminders:', error);
+          }
         }
-    });
+      } else {
+        console.log("[Appointments] No appointments found needing reminders.");
+      }
+    } catch (error) {
+      console.error("[Appointments] Error checking for reminders:", error);
+    }
 
-    console.log('Notification service started. Cron job scheduled to run every 30 seconds.');
+    // --- Task 2: Medication Reminders (Stateless) ---
+    try {
+      const usersWithActiveMeds = await Medication.find({
+        startDate: { $lte: now },
+        $or: [{ endDate: null }, { endDate: { $gte: startOfToday } }],
+      }).distinct("user");
+      if (usersWithActiveMeds.length > 0) {
+        console.log(
+          `[Medications] Found ${usersWithActiveMeds.length} user(s) with active medications.`
+        );
+        for (const userId of usersWithActiveMeds) {
+          const user = await User.findById(userId); // This now works because User is imported
+          if (!user) continue;
+          const userMeds = await Medication.find({
+            user: userId,
+            startDate: { $lte: now },
+            $or: [{ endDate: null }, { endDate: { $gte: startOfToday } }],
+          }).lean(); // Use .lean() for efficiency
+          if (userMeds.length > 0) {
+            sendMedicationReminderEmail(user, userMeds);
+          }
+        }
+      } else {
+        console.log("[Medications] No users with active medications found.");
+      }
+    } catch (error) {
+      console.error("[Medications] Error sending reminders:", error);
+    }
+  });
+  console.log(
+    `Notification service started. Cron job scheduled to run: ${cronSchedule}.`
+  );
 };
 
 module.exports = { startScheduledJobs };
