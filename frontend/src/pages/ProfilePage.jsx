@@ -12,10 +12,10 @@ const ProfilePage = () => {
   const [formData, setFormData] = useState({ name: '', dateOfBirth: '' });
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+    useEffect(() => {
     if (user) {
       setFormData({
-        name: user.name,
+        name: user.name || '', // Fallback to empty string
         dateOfBirth: user.dateOfBirth ? new Date(user.dateOfBirth).toISOString().split('T')[0] : '',
       });
       setLoading(false);
@@ -26,16 +26,25 @@ const ProfilePage = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
   
-  // NOTE: This handleSubmit is a placeholder for a future backend update.
-  // We don't have a backend route to update the user model yet.
-  const handleSubmit = (e) => {
-      e.preventDefault();
-      toast.error("Profile editing is not yet enabled on the backend.");
-      // In the future, you would call an API like this:
-      // const updatedUser = await api.updateUser(user._id, formData);
-      // login(updatedUser, localStorage.getItem('userToken')); // Update context
-      // toast.success('Profile updated!');
-  }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const toastId = toast.loading('Updating profile...');
+    try {
+        // The API will return the updated Profile document, which includes the user object
+        const updatedProfile = await api.updateProfile(formData);
+        
+        // The user object is nested inside the updated profile data
+        const updatedUser = updatedProfile.user;
+
+        // We use the login function from AuthContext to update the user state globally.
+        // We pass the new user object and the existing token.
+        login(updatedUser, localStorage.getItem('userToken'));
+        
+        toast.success('Profile updated successfully!', { id: toastId });
+    } catch (err) {
+        toast.error(err.message || 'Failed to update profile.', { id: toastId });
+    }
+}
 
   if (loading) return <Spinner />;
 

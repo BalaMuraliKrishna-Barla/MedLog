@@ -58,7 +58,7 @@ const sendAppointmentReminderEmail = (user, appointment) => {
 
 // 3. Email sending function for Medications with new template
 const sendMedicationReminderEmail = (user, medications) => {
-  const medicationListHtml = medications.map(med => `
+  const medicationListHtml = medications.ymap(med => `
         <tr>
             <td style="padding: 10px 15px; border-bottom: 1px solid #eee;">💊 <strong>${med.medicationName}</strong></td>
             <td style="padding: 10px 15px; border-bottom: 1px solid #eee;">🧪 ${med.dosage}</td>
