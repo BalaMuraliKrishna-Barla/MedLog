@@ -70,7 +70,6 @@ const sendMedicationReminderEmail = (user, medications) => {
     });
 };
 
-// 4. THE FINAL CRON JOB LOGIC
 const startScheduledJobs = () => {
     // Using 30-second interval for testing. Production should be '0 8 * * *'
     cron.schedule('*/30 * * * * *', async () => {
@@ -78,9 +77,9 @@ const startScheduledJobs = () => {
         const startOfToday = new Date();
         startOfToday.setHours(0, 0, 0, 0);
 
-        console.log(`\n--- Running Scheduled Jobs at ${now.toLocaleTimeString()} ---`);
+        console.log(`\n--- [${now.toLocaleTimeString()}] Running Scheduled Jobs ---`);
 
-        // --- Task 1: Check for Appointment Reminders (Stateful) ---
+        // --- Task 1: Check for Appointment Reminders ---
         try {
             const startOfTomorrow = new Date();
             startOfTomorrow.setDate(startOfTomorrow.getDate() + 1);
@@ -88,56 +87,72 @@ const startScheduledJobs = () => {
             const endOfTomorrow = new Date(startOfTomorrow);
             endOfTomorrow.setDate(endOfTomorrow.getDate() + 1);
 
+            // LOG: Show the exact date range we are querying for appointments
+            console.log(`[Appointments] Querying for reminders between ${startOfTomorrow.toISOString()} and ${endOfTomorrow.toISOString()}`);
+
             const upcomingAppointments = await Appointment.find({
                 appointmentDateTime: { $gte: startOfTomorrow, $lt: endOfTomorrow },
                 reminderSent: false,
             }).populate('user', 'name email');
-
+            
+            // LOG: Report how many appointments were found
             if (upcomingAppointments.length > 0) {
+                console.log(`[Appointments] Found ${upcomingAppointments.length} appointment(s) needing reminders.`);
                 upcomingAppointments.forEach(async (app) => {
                     if (app.user) {
                         sendAppointmentReminderEmail(app.user, app);
                         await Appointment.findByIdAndUpdate(app._id, { reminderSent: true });
                     }
                 });
+            } else {
+                console.log('[Appointments] No appointments found needing reminders.');
             }
         } catch (error) {
-            console.error('Error checking for appointment reminders:', error);
+            console.error('[Appointments] Error checking for reminders:', error);
         }
 
-        // --- Task 2: Check for Daily Medication Reminders (Stateful) ---
+        // --- Task 2: Check for Daily Medication Reminders ---
         try {
             const userIdsWithActiveMeds = await Medication.distinct('user', {
                 startDate: { $lte: now },
                 $or: [{ endDate: null }, { endDate: { $gte: now } }],
             });
 
-            if (userIdsWithActiveMeds.length > 0) {
-                const profilesToRemind = await Profile.find({
-                    user: { $in: userIdsWithActiveMeds },
-                    $or: [
-                        { medicationReminderLastSent: null },
-                        { medicationReminderLastSent: { $lt: startOfToday } },
-                    ],
-                }).populate('user', 'name email');
+            // LOG: Report if we found any users with active meds
+            if (userIdsWithActiveMeds.length === 0) {
+                console.log('[Medications] No users with active medications found.');
+                return; // Stop this task if no one has active meds
+            }
+            console.log(`[Medications] Found ${userIdsWithActiveMeds.length} user(s) with active medications.`);
 
-                if (profilesToRemind.length > 0) {
-                    console.log(`Found ${profilesToRemind.length} user(s) needing medication reminders.`);
-                    for (const profile of profilesToRemind) {
-                        const user = profile.user;
-                        if (!user) continue;
+            const profilesToRemind = await Profile.find({
+                user: { $in: userIdsWithActiveMeds },
+                $or: [
+                    { medicationReminderLastSent: null },
+                    { medicationReminderLastSent: { $lt: startOfToday } },
+                ],
+            }).populate('user', 'name email');
+            
+            // LOG: Report how many of those users actually need a reminder today
+            if (profilesToRemind.length > 0) {
+                console.log(`[Medications] Found ${profilesToRemind.length} user(s) needing medication reminders today.`);
+                for (const profile of profilesToRemind) {
+                    const user = profile.user;
+                    if (!user) continue;
 
-                        const userMeds = await Medication.find({ user: user._id, startDate: { $lte: now }, $or: [{ endDate: null }, { endDate: { $gte: now } }] });
-                        
-                        if (userMeds.length > 0) {
-                            sendMedicationReminderEmail(user, userMeds);
-                            await Profile.updateOne({ _id: profile._id }, { medicationReminderLastSent: new Date() });
-                        }
+                    const userMeds = await Medication.find({ user: user._id, startDate: { $lte: now }, $or: [{ endDate: null }, { endDate: { $gte: now } }] });
+                    
+                    if (userMeds.length > 0) {
+                        sendMedicationReminderEmail(user, userMeds);
+                        await Profile.updateOne({ _id: profile._id }, { medicationReminderLastSent: new Date() });
                     }
                 }
+            } else {
+                console.log('[Medications] No users found needing medication reminders today (reminders likely already sent).');
             }
+
         } catch (error) {
-            console.error('Error checking for medication reminders:', error);
+            console.error('[Medications] Error checking for reminders:', error);
         }
     });
 
