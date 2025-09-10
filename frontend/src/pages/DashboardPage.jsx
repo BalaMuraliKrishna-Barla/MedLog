@@ -1,74 +1,40 @@
-// REPLACE the entire file with this new version
-import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext';
+import React from 'react';
+import { useLocation } from 'react-router-dom';
 import { useData } from '../context/DataContext';
-
+import Spinner from '../components/Spinner';
 import AllergySection from '../components/AllergySection';
 import MedicationSection from '../components/MedicationSection';
 import VaccinationSection from '../components/VaccinationSection';
 import VitalSection from '../components/VitalSection';
 import MedicalEventSection from '../components/MedicalEventSection';
-import CustomSection from '../components/CustomSection';
-import CustomSectionForm from '../components/CustomSectionForm';
-
-import PendingGrants from '../components/PendingGrants';
-import PatientList from '../components/PatientList';
-import Spinner from '../components/Spinner';
-import Modal from '../components/Modal';
-import '../styles/Dashboard.css';
 
 const DashboardPage = () => {
-  const { user } = useAuth();
-  const { records, loading, error } = useData();
-  const [patientListKey, setPatientListKey] = useState(0);
-  const [isCustomSectionModalOpen, setIsCustomSectionModalOpen] = useState(false);
+    const { records, loading, error } = useData();
+    const location = useLocation();
+    const path = location.pathname;
 
-  const handleGrantUpdate = () => {
-    setPatientListKey(prevKey => prevKey + 1);
-  };
+    if (loading) return <Spinner />;
+    if (error) return <div className="error-message">{error}</div>;
 
-  if (loading || !user) {
-    return <div className="container"><Spinner /></div>;
-  }
-  
-  if (error) {
-    return <div className="container error-message">{error}</div>;
-  }
+    // Render the appropriate section based on the URL path
+    if (path.includes('allergies')) {
+        return <AllergySection allergies={records.allergies} />;
+    }
+    if (path.includes('medications')) {
+        return <MedicationSection medications={records.medications} />;
+    }
+    if (path.includes('vaccinations')) {
+        return <VaccinationSection vaccinations={records.vaccinations} />;
+    }
+    if (path.includes('vitals')) {
+        return <VitalSection vitals={records.vitals} />;
+    }
+    if (path.includes('history')) {
+        return <MedicalEventSection medicalEvents={records.medicalEvents} />;
+    }
 
-  return (
-    <div className="dashboard-container container">
-      {user.role === 'Patient' && (
-        <>
-          <div className="dashboard-header">
-            <h1 className="dashboard-title">My Health Dashboard</h1>
-            <button className="btn btn-secondary" onClick={() => setIsCustomSectionModalOpen(true)}>+ Add Custom Section</button>
-          </div>
-          <div className="dashboard-grid">
-            {/* Pass the correct props from the context to each section */}
-            <AllergySection allergies={records.allergies} />
-            <MedicationSection medications={records.medications} />
-            <VaccinationSection vaccinations={records.vaccinations} />
-            <VitalSection vitals={records.vitals} />
-            <MedicalEventSection medicalEvents={records.medicalEvents} />
-            {records.customSections.map(section => (
-                <CustomSection key={section._id} section={section} />
-            ))}
-          </div>
-          <Modal isOpen={isCustomSectionModalOpen} onClose={() => setIsCustomSectionModalOpen(false)} title="Create New Section">
-                <CustomSectionForm onFormSubmit={() => setIsCustomSectionModalOpen(false)} />
-          </Modal>
-        </>
-      )}
-
-      {user.role === 'Doctor' && (
-        <>
-          <h1 className="dashboard-title">Doctor Dashboard</h1>
-          <PendingGrants onGrantUpdate={handleGrantUpdate} />
-          <PatientList key={patientListKey} />
-        </>
-      )}
-    </div>
-  );
+    // Fallback if no specific section is matched
+    return <h2>Select a category from the left menu to view your records.</h2>;
 };
 
 export default DashboardPage;

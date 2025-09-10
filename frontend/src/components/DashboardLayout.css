@@ -1,0 +1,65 @@
+.dashboard-layout {
+    display: flex;
+    gap: var(--sp-2);
+}
+
+.dashboard-nav {
+    width: 250px;
+    /* Fixed width for the sidebar */
+    flex-shrink: 0;
+    /* Prevents the sidebar from shrinking */
+    background-color: var(--container-color);
+    border-radius: var(--border-radius);
+    padding: var(--sp-1-5);
+    height: calc(100vh - 4.5rem - 4rem);
+    /* Full height minus navbar and container padding */
+    position: sticky;
+    top: calc(4.5rem + var(--sp-2));
+    /* Corrected sticky position */
+}
+.dashboard-nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-1);
+}
+
+.dashboard-nav-link {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-1);
+    padding: var(--sp-1);
+    border-radius: var(--border-radius);
+    color: var(--dark-color);
+    font-weight: var(--font-medium);
+    transition: all 0.3s;
+}
+
+.dashboard-nav-link .nav-icon {
+    font-size: 1.25rem;
+    width: 25px;
+    /* Ensures consistent icon alignment */
+    text-align: center;
+}
+
+.dashboard-nav-link.active,
+.dashboard-nav-link:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.dashboard-content {
+    flex-grow: 1;
+    /* Allows the content area to take up the remaining space */
+    width: 100%;
+}
+
+/* Responsive adjustments for mobile */
+@media screen and (max-width: 992px) {
+    .dashboard-nav {
+        display: none;
+        /* Hide the sidebar on mobile */
+    }
+}

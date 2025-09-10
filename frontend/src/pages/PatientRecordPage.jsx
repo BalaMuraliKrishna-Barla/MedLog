@@ -8,7 +8,6 @@ import VaccinationSection from '../components/VaccinationSection';
 import VitalSection from '../components/VitalSection';
 import MedicalEventSection from '../components/MedicalEventSection';
 import CustomSection from '../components/CustomSection'; // Assuming it can be read-only too
-import '../styles/Dashboard.css';
 
 const PatientRecordPage = () => {
     const { userId } = useParams();

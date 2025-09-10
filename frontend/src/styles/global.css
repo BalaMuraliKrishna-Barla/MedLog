@@ -102,11 +102,13 @@ img {
 
 /* ===== UTILITY CLASSES ===== */
 .container {
-    max-width: 968px;
+    width: 100%;
+    /* max-width has been removed to allow the layout to fill the screen */
     margin-left: auto;
     margin-right: auto;
+    /* This padding acts as the minimal space from the screen edges */
     padding: 0 var(--sp-1-5);
-}
+}   
 
 /* ===== RESPONSIVE TYPOGRAPHY ===== */
 @media screen and (max-width: 992px) {
