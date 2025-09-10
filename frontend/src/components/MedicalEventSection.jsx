@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
-import { useData } from '../context/DataContext';
 import Card from './Card';
 import Modal from './Modal';
 import MedicalEventForm from './MedicalEventForm';
 import * as api from '../services/api';
+import { useData } from '../context/DataContext';
+import toast from 'react-hot-toast';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faStethoscope } from '@fortawesome/free-solid-svg-icons';
 import '../styles/RecordList.css';
 
-const MedicalEventSection = () => {
-    const { records, deleteRecord } = useData();
+const MedicalEventSection = ({ medicalEvents, readOnly = false }) => {
+    const { deleteRecord } = useData();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
 
@@ -28,26 +29,31 @@ const MedicalEventSection = () => {
             try {
                 await api.deleteMedicalEvent(id);
                 deleteRecord('medicalEvents', id);
+                toast.success('Medical event removed.');
             } catch (err) {
-                alert(err.message);
+                toast.error(err.message || 'Failed to delete medical event.');
             }
         }
     };
 
     return (
         <>
-            <Card title="Medical History" onAdd={() => openModal()} icon={<FontAwesomeIcon icon={faStethoscope} color="#007bff" />}>
-                {records.medicalEvents.length > 0 ? (
+            <Card title="Medical History" onAdd={() => openModal()} readOnly={readOnly} icon={<FontAwesomeIcon icon={faStethoscope} color="#007bff" />}>
+                {medicalEvents.length > 0 ? (
                     <div className="record-list">
-                        {records.medicalEvents.map(item => (
+                        {medicalEvents.map(item => (
                             <div key={item._id} className="record-item">
                                 <div className="record-details">
                                     <h4>{item.title} ({item.eventType})</h4>
                                     <p>Date: {new Date(item.date).toLocaleDateString()}</p>
                                 </div>
                                 <div className="record-actions">
-                                    <button onClick={() => openModal(item)} className="btn-edit">Edit</button>
-                                    <button onClick={() => handleDelete(item._id)} className="btn-delete">Delete</button>
+                                    {!readOnly && (
+                                        <>
+                                            <button onClick={() => openModal(item)} className="btn-edit">Edit</button>
+                                            <button onClick={() => handleDelete(item._id)} className="btn-delete">Delete</button>
+                                        </>
+                                    )}
                                 </div>
                             </div>
                         ))}

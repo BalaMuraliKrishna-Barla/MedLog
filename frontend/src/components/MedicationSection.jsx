@@ -1,18 +1,18 @@
-// REPLACE the entire file with this new version
 import React, { useState } from 'react';
-import { useData } from '../context/DataContext';
 import Card from './Card';
 import Modal from './Modal';
 import MedicationForm from './MedicationForm';
 import ConfirmationModal from './ConfirmationModal';
 import * as api from '../services/api';
 import toast from 'react-hot-toast';
+import { useData } from '../context/DataContext'; // Still needed for actions
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPills } from '@fortawesome/free-solid-svg-icons';
 import '../styles/RecordList.css';
 
-const MedicationSection = () => {
-    const { records, deleteRecord } = useData();
+const MedicationSection = ({ medications, readOnly = false }) => {
+    // We still need useData for when the component is NOT read-only
+    const { deleteRecord } = useData();
     const [isFormModalOpen, setIsFormModalOpen] = useState(false);
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
@@ -51,7 +51,6 @@ const MedicationSection = () => {
         }
     };
 
-    // Helper to format the frequency display
     const formatFrequency = (freq) => {
         if (!freq) return 'Not specified';
         const { timesPerDay, timings } = freq;
@@ -61,18 +60,22 @@ const MedicationSection = () => {
 
     return (
         <>
-            <Card title="Medications" onAdd={() => openFormModal()} icon={<FontAwesomeIcon icon={faPills} color="#28a745" />}>
-                {records.medications.length > 0 ? (
+            <Card title="Medications" onAdd={() => openFormModal()} readOnly={readOnly} icon={<FontAwesomeIcon icon={faPills} color="#28a745" />}>
+                {medications.length > 0 ? (
                     <div className="record-list">
-                        {records.medications.map(item => (
+                        {medications.map(item => (
                             <div key={item._id} className="record-item">
                                 <div className="record-details">
                                     <h4>{item.medicationName} ({item.dosage})</h4>
                                     <p>{formatFrequency(item.frequency)} - {item.instructions}</p>
                                 </div>
                                 <div className="record-actions">
-                                    <button onClick={() => openFormModal(item)} className="btn-edit">Edit</button>
-                                    <button onClick={() => openConfirmModal(item._id)} className="btn-delete">Delete</button>
+                                    {!readOnly && (
+                                        <>
+                                            <button onClick={() => openFormModal(item)} className="btn-edit">Edit</button>
+                                            <button onClick={() => openConfirmModal(item._id)} className="btn-delete">Delete</button>
+                                        </>
+                                    )}
                                 </div>
                             </div>
                         ))}

@@ -1,7 +1,7 @@
 import React from 'react';
 import './Card.css';
 
-const Card = ({ title, children, onAdd, icon, extraHeaderContent }) => {
+const Card = ({ title, children, onAdd, icon, extraHeaderContent, readOnly = false }) => {
   return (
     <div className="card">
       <div className="card__header">
@@ -11,7 +11,7 @@ const Card = ({ title, children, onAdd, icon, extraHeaderContent }) => {
         </div>
         <div className="card__header-actions">
             {extraHeaderContent}
-            {onAdd && (
+            {onAdd && !readOnly && (
               <button onClick={onAdd} className="btn btn-primary">
                 + Add New
               </button>

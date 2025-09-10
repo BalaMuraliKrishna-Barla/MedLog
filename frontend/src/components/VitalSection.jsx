@@ -7,9 +7,10 @@ import * as api from '../services/api';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHeartbeat } from '@fortawesome/free-solid-svg-icons';
 import '../styles/RecordList.css';
+import toast from 'react-hot-toast';
 
-const VitalSection = () => {
-    const { records, deleteRecord } = useData();
+const VitalSection = ({ vitals, readOnly = false }) => {
+    const { deleteRecord } = useData();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
 
@@ -28,26 +29,36 @@ const VitalSection = () => {
             try {
                 await api.deleteVital(id);
                 deleteRecord('vitals', id);
+                toast.success('Vitals record removed.');
             } catch (err) {
-                alert(err.message);
+                toast.error(err.message || 'Failed to delete vitals record.');
             }
         }
     };
 
     return (
         <>
-            <Card title="Vitals" onAdd={() => openModal()} icon={<FontAwesomeIcon icon={faHeartbeat} color="#dc3545" />}>
-                {records.vitals.length > 0 ? (
+            <Card 
+                title="Vitals" 
+                onAdd={() => openModal()} 
+                readOnly={readOnly} // This was the missing prop
+                icon={<FontAwesomeIcon icon={faHeartbeat} color="#dc3545" />}
+            >
+                {vitals.length > 0 ? (
                     <div className="record-list">
-                        {records.vitals.map(item => (
+                        {vitals.map(item => (
                             <div key={item._id} className="record-item">
                                 <div className="record-details">
                                     <h4>{new Date(item.recordDate).toLocaleDateString()}</h4>
                                     <p>BP: {item.bloodPressure || 'N/A'} | HR: {item.heartRate || 'N/A'} bpm</p>
                                 </div>
                                 <div className="record-actions">
-                                    <button onClick={() => openModal(item)} className="btn-edit">Edit</button>
-                                    <button onClick={() => handleDelete(item._id)} className="btn-delete">Delete</button>
+                                    {!readOnly && (
+                                        <>
+                                            <button onClick={() => openModal(item)} className="btn-edit">Edit</button>
+                                            <button onClick={() => handleDelete(item._id)} className="btn-delete">Delete</button>
+                                        </>
+                                    )}
                                 </div>
                             </div>
                         ))}

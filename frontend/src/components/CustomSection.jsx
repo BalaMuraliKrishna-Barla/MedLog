@@ -7,22 +7,24 @@ import ConfirmationModal from './ConfirmationModal';
 import * as api from '../services/api';
 import toast from 'react-hot-toast';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash, faPlus } from '@fortawesome/free-solid-svg-icons';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import '../styles/RecordList.css';
 
-const CustomSection = ({ section }) => {
+const CustomSection = ({ section, readOnly = false }) => {
     const { updateRecord, deleteRecord } = useData();
     const [isItemModalOpen, setIsItemModalOpen] = useState(false);
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
     const [itemToDelete, setItemToDelete] = useState(null);
 
     const handleDeleteSection = async () => {
-        try {
-            await api.deleteCustomSection(section._id);
-            deleteRecord('customSections', section._id);
-            toast.success('Section deleted!');
-        } catch (err) {
-            toast.error(err.message || 'Failed to delete section.');
+        if (window.confirm('Are you sure you want to permanently delete this entire section and all its entries?')) {
+            try {
+                await api.deleteCustomSection(section._id);
+                deleteRecord('customSections', section._id);
+                toast.success('Section deleted!');
+            } catch (err) {
+                toast.error(err.message || 'Failed to delete section.');
+            }
         }
     };
 
@@ -49,12 +51,15 @@ const CustomSection = ({ section }) => {
         <>
             <Card
                 title={section.title}
-                icon={<FontAwesomeIcon icon={['fas', 'notes-medical']} />} // Using a default icon
-                onAdd={() => setIsItemModalOpen(true)}
+                icon={<FontAwesomeIcon icon={['fas', 'notes-medical']} />}
+                onAdd={!readOnly ? () => setIsItemModalOpen(true) : null}
+                readOnly={readOnly}
                 extraHeaderContent={
-                    <button onClick={handleDeleteSection} className="btn-delete-section">
-                        <FontAwesomeIcon icon={faTrash} />
-                    </button>
+                    !readOnly && (
+                        <button onClick={handleDeleteSection} className="btn-delete-section">
+                            <FontAwesomeIcon icon={faTrash} />
+                        </button>
+                    )
                 }
             >
                 {section.items && section.items.length > 0 ? (
@@ -67,7 +72,9 @@ const CustomSection = ({ section }) => {
                                     {item.description && <p className="record-description">{item.description}</p>}
                                 </div>
                                 <div className="record-actions">
-                                    <button onClick={() => openConfirmDeleteItem(item._id)} className="btn-delete">Delete</button>
+                                    {!readOnly && (
+                                        <button onClick={() => openConfirmDeleteItem(item._id)} className="btn-delete">Delete</button>
+                                    )}
                                 </div>
                             </div>
                         ))}

@@ -44,11 +44,12 @@ const DashboardPage = () => {
             <button className="btn btn-secondary" onClick={() => setIsCustomSectionModalOpen(true)}>+ Add Custom Section</button>
           </div>
           <div className="dashboard-grid">
-            <AllergySection />
-            <MedicationSection />
-            <VaccinationSection />
-            <VitalSection />
-            <MedicalEventSection />
+            {/* Pass the correct props from the context to each section */}
+            <AllergySection allergies={records.allergies} />
+            <MedicationSection medications={records.medications} />
+            <VaccinationSection vaccinations={records.vaccinations} />
+            <VitalSection vitals={records.vitals} />
+            <MedicalEventSection medicalEvents={records.medicalEvents} />
             {records.customSections.map(section => (
                 <CustomSection key={section._id} section={section} />
             ))}

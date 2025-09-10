@@ -71,6 +71,28 @@ const getMe = async (req, res) => {
     res.status(200).json(req.user);
 };
 
+// @desc    Get user data by ID
+// @route   GET /api/users/:id
+// @access  Private
+const getUserById = async (req, res) => {
+    try {
+        const user = await User.findById(req.params.id).select('-password');
+
+        if (!user) {
+            res.status(404);
+            throw new Error('User not found');
+        }
+
+        res.status(200).json({
+            _id: user.id,
+            name: user.name,
+            email: user.email,
+            role: user.role,
+        });
+    } catch (error) {
+        res.status(res.statusCode || 500).json({ message: error.message });
+    }
+};
 
 // Generate JWT
 const generateToken = (id) => {
@@ -106,7 +128,8 @@ const loginUser = async (req, res) => {
 
 
 module.exports = {
-    registerUser,
-    loginUser,
-    getMe,
+  registerUser,
+  loginUser,
+  getMe,
+  getUserById,
 };

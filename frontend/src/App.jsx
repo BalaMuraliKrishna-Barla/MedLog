@@ -49,8 +49,7 @@ function App() {
             <Route path="/appointments" element={<ProtectedRoute><DataProvider><AppointmentsPage /></DataProvider></ProtectedRoute>} />
             <Route path="/profile" element={<ProtectedRoute><DataProvider><ProfilePage /></DataProvider></ProtectedRoute>} />
             <Route path="/sharing" element={<ProtectedRoute><SharingPage /></ProtectedRoute>} />
-            <Route path="/records/:userId" element={<ProtectedRoute><PatientRecordPage /></ProtectedRoute>} />
-            <Route path="*" element={<NotFoundPage />} />
+            <Route path="/records/:userId" element={<ProtectedRoute><DataProvider><PatientRecordPage /></DataProvider></ProtectedRoute>} />            <Route path="*" element={<NotFoundPage />} />
           </Routes>
           </main>
           <Footer />

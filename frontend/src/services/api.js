@@ -70,6 +70,10 @@ export const getMe = () => {
   return apiRequest("/users/me", "GET"); // Protected route by default
 };
 
+export const getUserById = (userId) => {
+  return apiRequest(`/users/${userId}`, "GET");
+};
+
 export const updateProfile = (data) => {
   return apiRequest("/profile/me", "PUT", data);
 };

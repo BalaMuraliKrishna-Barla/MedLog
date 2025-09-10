@@ -1,4 +1,3 @@
-// REPLACE the entire file with this new version
 import React, { useState } from 'react';
 import { useData } from '../context/DataContext';
 import Card from './Card';
@@ -11,8 +10,8 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faAllergies } from '@fortawesome/free-solid-svg-icons';
 import '../styles/RecordList.css';
 
-const AllergySection = () => {
-    const { records, deleteRecord } = useData();
+const AllergySection = ({ allergies, readOnly = false }) => {
+    const { deleteRecord } = useData();
     const [isFormModalOpen, setIsFormModalOpen] = useState(false);
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
     const [selectedAllergy, setSelectedAllergy] = useState(null);
@@ -53,18 +52,27 @@ const AllergySection = () => {
 
     return (
         <>
-            <Card title="Allergies" onAdd={() => openFormModal()} icon={<FontAwesomeIcon icon={faAllergies} color="#ffc107" />}>
-                {records.allergies.length > 0 ? (
+            <Card 
+                title="Allergies" 
+                onAdd={() => openFormModal()} 
+                readOnly={readOnly} // This was the missing prop
+                icon={<FontAwesomeIcon icon={faAllergies} color="#ffc107" />}
+            >
+                {allergies.length > 0 ? (
                     <div className="record-list">
-                        {records.allergies.map(allergy => (
+                        {allergies.map(allergy => (
                             <div key={allergy._id} className="record-item">
                                 <div className="record-details">
                                     <h4>{allergy.allergen} ({allergy.allergyType})</h4>
                                     <p>Severity: {allergy.severity} | Reaction: {allergy.reaction}</p>
                                 </div>
                                 <div className="record-actions">
-                                    <button onClick={() => openFormModal(allergy)} className="btn-edit">Edit</button>
-                                    <button onClick={() => openConfirmModal(allergy._id)} className="btn-delete">Delete</button>
+                                    {!readOnly && (
+                                        <>
+                                            <button onClick={() => openFormModal(allergy)} className="btn-edit">Edit</button>
+                                            <button onClick={() => openConfirmModal(allergy._id)} className="btn-delete">Delete</button>
+                                        </>
+                                    )}
                                 </div>
                             </div>
                         ))}
