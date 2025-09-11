@@ -140,8 +140,68 @@ const sendMedicationReminderEmail = (user, medications) => {
   });
 };
 
+const sendOtpEmail = (email, otp) => {
+  const mailOptions = {
+    from: `MedLog <${process.env.EMAIL_USER}>`,
+    to: email,
+    subject: "🔐 Verify Your Email with MedLog – One-Time Code Inside",
+    html: `
+    <div style="font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f4f6f9; padding: 40px;">
+      <div style="max-width: 550px; margin: auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);">
+
+        <!-- Header -->
+        <div style="background-color: #009879; color: white; padding: 30px; text-align: center;">
+          <h1 style="margin: 0; font-size: 26px;">🔐 Email Verification</h1>
+          <p style="margin: 8px 0 0;">Secure Your MedLog Account</p>
+        </div>
+
+        <!-- Body -->
+        <div style="padding: 35px 30px;">
+          <p style="font-size: 16px; color: #333;">Hi there,</p>
+          <p style="font-size: 16px; color: #333;">
+            Use the verification code below to complete your registration or login to <strong>MedLog</strong>:
+          </p>
+
+          <div style="margin: 30px auto; width: fit-content; padding: 18px 30px; background-color: #f1f1f1; color: #2d2d2d; font-size: 30px; letter-spacing: 6px; font-weight: bold; border-radius: 10px; border: 2px dashed #009879;">
+            ${otp}
+          </div>
+
+          <p style="margin-top: 30px; font-size: 14px; color: #666;">
+            ⏳ This code is valid for <strong>10 minutes</strong>.<br />
+            If you didn’t request this, you can safely ignore this email.
+          </p>
+
+          <div style="text-align: center; margin-top: 40px;">
+            <a href="#" style="text-decoration: none; background-color: #009879; color: white; padding: 12px 25px; border-radius: 6px; font-size: 16px;">
+              ✅ Verify Now
+            </a>
+          </div>
+        </div>
+
+        <!-- Footer -->
+        <div style="background-color: #f0f0f0; text-align: center; padding: 20px; font-size: 13px; color: #888;">
+          <p style="margin: 0;">🔒 Keeping your data secure is our priority – <strong>MedLog Security Team</strong></p>
+          <p style="margin-top: 5px;">Need help? <a href="mailto:support@medlog.com" style="color: #009879;">Contact Support</a></p>
+        </div>
+      </div>
+    </div>
+    `,
+  };
+
+  console.log(`[EMAIL TRIGGERED] Attempting to send OTP to ${email}.`);
+  transporter.sendMail(mailOptions, (error) => {
+    if (error) {
+      console.error(`Error sending OTP email to ${email}:`, error);
+    } else {
+      console.log(`OTP email sent successfully to ${email}`);
+    }
+  });
+};
+
+
 const startScheduledJobs = () => {
-  const cronSchedule = "0 8 * * * *";
+  // const cronSchedule = "0 8 * * * *";
+  const cronSchedule = "*/30 * * * * *";
 
   cron.schedule(cronSchedule, async () => {
     const now = new Date();
@@ -215,4 +275,4 @@ const startScheduledJobs = () => {
   );
 };
 
-module.exports = { startScheduledJobs };
+module.exports = { startScheduledJobs, sendOtpEmail };

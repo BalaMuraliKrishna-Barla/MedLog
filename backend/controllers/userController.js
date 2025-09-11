@@ -2,66 +2,75 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/userModel');
 const Profile = require('../models/profileModel');
+const Otp = require("../models/otpModel");
+const { sendOtpEmail } = require("../services/notificationService");
 
-// WITH this new version
-const registerUser = async (req, res) => {
+// @desc    Send OTP for registration
+// @route   POST /api/users/send-otp
+// @access  Public
+const sendRegistrationOtp = async (req, res) => {
     try {
-        const { name, email, password, dateOfBirth, role } = req.body;
-
-        // 1. Validation
-        if (!name || !email || !password || !dateOfBirth || !role) {
+        const { email } = req.body;
+        if (!email) {
             res.status(400);
-            throw new Error('Please include all fields: name, email, password, date of birth, and role.');
+            throw new Error('Please provide an email.');
         }
-
-        // 2. Find if user already exists
         const userExists = await User.findOne({ email });
         if (userExists) {
             res.status(400);
-            throw new Error('User already exists');
+            throw new Error('An account with this email already exists.');
         }
-
-        // 3. Hash password
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(password, salt);
-
-        // 4. Create user
-        const user = await User.create({
-            name,
-            email,
-            password: hashedPassword,
-            dateOfBirth,
-            role,
-        });
-
-        // 5. Create an associated profile.
-        if (user) {
-            try {
-                // Pass the date of birth to the profile upon creation
-                await Profile.create({ user: user._id, dateOfBirth: user.dateOfBirth }); 
-
-                res.status(201).json({
-                    _id: user.id,
-                    name: user.name,
-                    email: user.email,
-                    role: user.role, // Return the role
-                    token: generateToken(user._id),
-                });
-            } catch (profileError) {
-                await User.findByIdAndDelete(user._id);
-                console.error(profileError);
-                res.status(500);
-                throw new Error('User registration failed, could not create profile.');
-            }
-        } else {
-            res.status(400);
-            throw new Error('Invalid user data');
-        }
+        const otp = Math.floor(100000 + Math.random() * 900000).toString();
+        await Otp.deleteMany({ email });
+        await Otp.create({ email, otp });
+        sendOtpEmail(email, otp);
+        res.status(200).json({ message: 'OTP sent successfully to your email.' });
     } catch (error) {
         res.status(res.statusCode || 500).json({ message: error.message });
     }
 };
 
+// @desc    Verify OTP and Register a new user
+// @route   POST /api/users/verify-register
+// @access  Public
+const verifyOtpAndRegisterUser = async (req, res) => {
+    try {
+        const { name, email, password, dateOfBirth, role, otp } = req.body;
+        if (!name || !email || !password || !dateOfBirth || !role || !otp) {
+            res.status(400);
+            throw new Error('Please include all fields, including the OTP.');
+        }
+        const storedOtp = await Otp.findOne({ email });
+        if (!storedOtp) {
+            res.status(400);
+            throw new Error('OTP is invalid or has expired. Please try again.');
+        }
+        const isMatch = await bcrypt.compare(otp, storedOtp.otp);
+        if (!isMatch) {
+            res.status(400);
+            throw new Error('The OTP you entered is incorrect.');
+        }
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+        const user = await User.create({ name, email, password: hashedPassword, dateOfBirth, role });
+        if (user) {
+            await Profile.create({ user: user._id, dateOfBirth: user.dateOfBirth });
+            await Otp.deleteMany({ email });
+            res.status(201).json({
+                _id: user.id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                token: generateToken(user._id),
+            });
+        } else {
+            res.status(400);
+            throw new Error('Invalid user data during user creation.');
+        }
+    } catch (error) {
+        res.status(res.statusCode || 500).json({ message: error.message });
+    }
+};
 
 // @desc    Get user data
 // @route   GET /api/users/me
@@ -128,7 +137,8 @@ const loginUser = async (req, res) => {
 
 
 module.exports = {
-  registerUser,
+  sendRegistrationOtp,
+  verifyOtpAndRegisterUser,
   loginUser,
   getMe,
   getUserById,
